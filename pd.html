@@ -168,7 +168,12 @@
       const card = document.createElement('article');
       card.className = 'book-card';
 
-      const img = document.createElement('img');
+            // 1. Create the Overlay (New)
+      const overlay = document.createElement('div');
+      overlay.className = 'book-overlay';
+      overlay.textContent = book.description || 'No description available.';
+	  
+	  const img = document.createElement('img');
       img.src = book.image;
       img.alt = `${book.title} cover`;
       img.loading = 'lazy';
@@ -195,7 +200,8 @@
       body.appendChild(meta);
       body.appendChild(pills);
 
-      card.appendChild(img);
+      card.appendChild(overlay);
+	  card.appendChild(img);
       card.appendChild(body);
       return card;
     }
