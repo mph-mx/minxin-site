@@ -126,12 +126,6 @@ header {
   background: var(--accent-primary);
   color: white;
 }
-/* -----------------------------------------------------
-   UTILITIES
------------------------------------------------------ */
-.hidden {
-  display: none !important;
-}
 
 /* -----------------------------------------------------
    NETFLIX STYLE ROWS
@@ -144,14 +138,14 @@ header {
 .genre-row-header {
   display: flex;
   justify-content: space-between;
-  padding: 0 4px 6px;
+  padding: 0 20px 6px;
 }
 
 .genre-scroll {
   display: flex;
   gap: 12px;
   overflow-x: auto;
-  padding-bottom: 6px;
+  padding: 0 20px 20px; 
   scroll-behavior: smooth;
 }
 
@@ -170,6 +164,41 @@ header {
   overflow: hidden;
   width: 160px;
   flex-shrink: 0;
+  position: relative; 
+}
+
+/* HOVER OVERLAY STYLES */
+.book-overlay {
+  position: absolute;
+  /* UPDATED: Cover only the bottom 55% of the card, leaving the top image visible */
+  top: 45%;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  
+  background: var(--accent-primary);
+  color: white;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  padding: 15px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow-y: auto;
+  z-index: 10;
+  backdrop-filter: blur(2px);
+  pointer-events: none;
+  
+  /* Optional: Add a top border to separate it cleanly from the image */
+  border-top: 1px solid rgba(255,255,255,0.2);
+}
+
+.book-card:hover .book-overlay {
+  opacity: 0.98; /* Increased opacity slightly since it's smaller */
+  pointer-events: auto;
 }
 
 .book-card img {
@@ -255,6 +284,11 @@ header {
    GRID / LIST
 ----------------------------------------------------- */
 
+/* UPDATED: Add padding to the container section for All Books view */
+#gridListSection {
+  padding: 0 20px 40px;
+}
+
 #gridListContainer.grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -292,4 +326,11 @@ header {
   color: #b30000;
   margin-bottom: 20px;
   font-size: 0.9rem;
+}
+
+/* -----------------------------------------------------
+   UTILITIES
+----------------------------------------------------- */
+.hidden {
+  display: none !important;
 }
