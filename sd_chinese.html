@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Secondary Division Reading List (Chinese)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body class="sd-cn">
+  <header>
+    <div class="title-block">
+      <a href="index.html" class="back-link">← Back</a>
+      <img src="images/logo.png" alt="Minxin Logo" class="header-logo">
+      <div>
+        <h1>Secondary Division Reading List (Chinese)</h1>
+        <p>Browse by genre or switch to all books and search.</p>
+      </div>
+    </div>
+
+    <div class="search-block">
+      <input id="searchInput" type="search" placeholder="Search Chinese books…" disabled>
+      <select id="genreFilter" disabled>
+        <option value="">All genres</option>
+      </select>
+      <div class="view-toggle">
+        <button id="btnBrowse" class="active" disabled>Browse</button>
+        <button id="btnAll" disabled>All books</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- COMING SOON BANNER -->
+    <div class="coming-soon-banner">
+      <strong>Coming Soon:</strong> The full Secondary Division Chinese Reading List will be available here soon.
+    </div>
+
+    <!-- Browse / Netflix rows -->
+    <section id="netflixSection" class="hidden"></section>
+
+    <!-- All Books view -->
+    <section id="gridListSection" class="hidden">
+      <div class="grid-list-header">
+        <h2 id="gridListHeading">All books</h2>
+        <div class="grid-list-view-mode">
+          <button id="modeGrid" class="active" disabled>Grid</button>
+          <button id="modeList" disabled>List</button>
+        </div>
+      </div>
+      <div id="gridListContainer" class="grid"></div>
+    </section>
+
+  </main>
+
+  <script>
+    const GENRE_PILL_MAP = {
+      "Adventure & Survival": "Adventure",
+      "Classics & Canon": "Classics",
+      "Fantasy Worlds": "Fantasy",
+      "Historical & War": "Historical",
+      "Horror & Supernatural": "Horror",
+      "Humour & Feel-Good": "Humour",
+      "Mystery, Crime & Thrillers": "Mystery",
+      "Non-Fiction, Biography & Memoir": "Non-Fiction",
+      "Poetry, Verse & Short Stories": "Poetry",
+      "Reference, Study & Dictionaries": "Reference",
+      "Romance & Relationships": "Romance",
+      "School, Family & Growing Up": "School",
+      "Sci-Fi & Dystopia": "Sci-Fi",
+      "Social Issues & Justice": "Social",
+      "Sport": "Sport"
+    };
+
+    const STATE = {
+      books: [],
+      genres: [],
+      filteredBooks: []
+    };
+
+    async function loadBooks() {
+      const res = await fetch('books.json');
+      const data = await res.json();
+
+      // CN division
+      const cnBooks = data.filter(b => b.division === 'SD-Chinese');
+
+      STATE.books = cnBooks;
+      STATE.filteredBooks = cnBooks.slice();
+      STATE.genres = Array.from(new Set(cnBooks.flatMap(b => b.genres || []))).sort();
+
+      // If books exist (later), we auto-enable controls
+      if (cnBooks.length > 0) {
+        enableControls();
+        populateGenreFilter();
+        renderNetflix();
+        enableHorizontalWheelScroll();
+        enableDragScroll();
+        renderGridOrList('grid');
+      }
+    }
+
+    function enableControls() {
+      document.getElementById('searchInput').disabled = false;
+      document.getElementById('genreFilter').disabled = false;
+      document.getElementById('btnBrowse').disabled = false;
+      document.getElementById('btnAll').disabled = false;
+      document.getElementById('modeGrid').disabled = false;
+      document.getElementById('modeList').disabled = false;
+    }
+
+    function populateGenreFilter() {
+      const select = document.getElementById('genreFilter');
+      select.innerHTML = '<option value="">All genres</option>';
+      STATE.genres.forEach(g => {
+        const opt = document.createElement('option');
+        opt.value = g;
+        opt.textContent = g;
+        select.appendChild(opt);
+      });
+    }
+
+    function renderNetflix() {
+      const container = document.getElementById('netflixSection');
+      container.innerHTML = '';
+
+      STATE.genres.forEach(genre => {
+        const rowBooks = STATE.books.filter(b => (b.genres || []).includes(genre));
+        if (!rowBooks.length) return;
+
+        const row = document.createElement('div');
+        row.className = 'genre-row';
+
+        const header = document.createElement('div');
+        header.className = 'genre-row-header';
+
+        const h2 = document.createElement('h2');
+        h2.textContent = genre;
+
+        const count = document.createElement('small');
+        count.textContent = `${rowBooks.length} book${rowBooks.length === 1 ? '' : 's'}`;
+
+        header.appendChild(h2);
+        header.appendChild(count);
+
+        const scroller = document.createElement('div');
+        scroller.className = 'genre-scroll';
+
+        rowBooks.forEach(book => {
+          const card = createGridCard(book);
+          scroller.appendChild(card);
+        });
+
+        row.appendChild(header);
+        row.appendChild(scroller);
+        container.appendChild(row);
+      });
+    }
+
+    function createGridCard(book) {
+      const card = document.createElement('article');
+      card.className = 'book-card';
+
+      const img = document.createElement('img');
+      img.src = book.image;
+      img.alt = `${book.title} cover`;
+      img.loading = 'lazy';
+
+      const body = document.createElement('div');
+      body.className = 'book-body';
+
+      const title = document.createElement('h3');
+      title.className = 'book-title';
+      title.textContent = book.title;
+
+      const author = document.createElement('div');
+      author.className = 'book-author';
+      author.textContent = book.author;
+
+      const meta = document.createElement('div');
+      meta.className = 'book-meta';
+      meta.textContent = book.reading_level || '';
+
+      const pills = document.createElement('div');
+      pills.className = 'pills';
+
+      const pillSet = new Set(
+        (book.genre_pills && book.genre_pills.length)
+          ? book.genre_pills
+          : (book.genres || []).map(g => GENRE_PILL_MAP[g] || g)
+      );
+
+      pillSet.forEach(p => {
+        const span = document.createElement('span');
+        span.className = p.match(/Explorer|Adventurer|Voyager|Galactic/i)
+          ? 'pill-level'
+          : 'pill-genre';
+        span.textContent = p;
+        pills.appendChild(span);
+      });
+
+      body.appendChild(title);
+      body.appendChild(author);
+      body.appendChild(meta);
+      body.appendChild(pills);
+
+      card.appendChild(img);
+      card.appendChild(body);
+      return card;
+    }
+
+    function createListCard(book) {
+      const card = document.createElement('article');
+      card.className = 'book-card-list';
+
+      const img = document.createElement('img');
+      img.src = book.image;
+      img.alt = `${book.title} cover`;
+      img.loading = 'lazy';
+
+      const body = document.createElement('div');
+      body.className = 'book-body';
+
+      const title = document.createElement('h3');
+      title.className = 'book-title';
+      title.textContent = book.title;
+
+      const author = document.createElement('div');
+      author.className = 'book-author';
+      author.textContent = book.author;
+
+      const meta = document.createElement('div');
+      meta.className = 'book-meta';
+      const genres = (book.genres || []).join(', ');
+      meta.textContent = `${book.reading_level || ''}${genres ? ' · ' + genres : ''}`;
+
+      const desc = document.createElement('div');
+      desc.className = 'book-description';
+      desc.textContent = book.description || '';
+
+      const pills = document.createElement('div');
+      pills.className = 'pills';
+
+      const pillSet = new Set(
+        (book.genre_pills && book.genre_pills.length)
+          ? book.genre_pills
+          : (book.genres || []).map(g => GENRE_PILL_MAP[g] || g)
+      );
+
+      pillSet.forEach(p => {
+        const span = document.createElement('span');
+        span.className = p.match(/Explorer|Adventurer|Voyager|Galactic/i)
+          ? 'pill-level'
+          : 'pill-genre';
+        span.textContent = p;
+        pills.appendChild(span);
+      });
+
+      body.appendChild(title);
+      body.appendChild(author);
+      body.appendChild(meta);
+      body.appendChild(desc);
+      body.appendChild(pills);
+
+      card.appendChild(img);
+      card.appendChild(body);
+      return card;
+    }
+
+    function renderGridOrList(mode) {
+      const container = document.getElementById('gridListContainer');
+      const list = STATE.filteredBooks;
+      const currentMode = mode || (container.classList.contains('list')
+        ? 'list'
+        : 'grid');
+
+      container.innerHTML = '';
+      container.className = currentMode;
+
+      list.forEach(book => {
+        if (currentMode === 'grid') {
+          container.appendChild(createGridCard(book));
+        } else {
+          container.appendChild(createListCard(book));
+        }
+      });
+    }
+
+    function enableHorizontalWheelScroll() {
+      document.querySelectorAll('.genre-scroll').forEach(scroller => {
+        scroller.addEventListener('wheel', evt => {
+          if (evt.deltaY === 0) return;
+          evt.preventDefault();
+          scroller.scrollLeft += evt.deltaY;
+        }, { passive: false });
+      });
+    }
+
+    function enableDragScroll() {
+      document.querySelectorAll('.genre-scroll').forEach(scroller => {
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        scroller.addEventListener('mousedown', e => {
+          isDown = true;
+          scroller.classList.add('dragging');
+          startX = e.pageX - scroller.offsetLeft;
+          scrollLeft = scroller.scrollLeft;
+        });
+
+        scroller.addEventListener('mouseleave', () => {
+          isDown = false;
+          scroller.classList.remove('dragging');
+        });
+
+        scroller.addEventListener('mouseup', () => {
+          isDown = false;
+          scroller.classList.remove('dragging');
+        });
+
+        scroller.addEventListener('mousemove', e => {
+          if (!isDown) return;
+          e.preventDefault();
+          const x = e.pageX - scroller.offsetLeft;
+          const walk = (x - startX) * 2;
+          scroller.scrollLeft = scrollLeft - walk;
+        });
+      });
+    }
+
+    function initEvents() {
+      // Events will be enabled automatically when CN books exist in JSON
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initEvents();
+      loadBooks();
+    });
+  </script>
+
+</body>
+</html>

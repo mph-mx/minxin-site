@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Secondary Division Reading List</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body class="sd">
+  <header>
+    <div class="title-block">
+      <a href="index.html" class="back-link">← Back</a>
+      <img src="images/logo.png" alt="Minxin Logo" class="header-logo">
+      <div>
+        <h1>Secondary Division Reading List</h1>
+        <p>Browse by genre, or search all books.</p>
+      </div>
+    </div>
+
+    <div class="search-block">
+      <input id="searchInput" type="search" placeholder="Search title, author, or genre…">
+
+      <div class="genre-filter">
+        <select id="genreFilter">
+          <option value="">All genres</option>
+        </select>
+      </div>
+
+      <div class="toggle-group" id="viewToggle">
+        <button id="viewNetflix" class="active">Browse</button>
+        <button id="viewGridList">All Books</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- Netflix-style rows -->
+    <section id="netflixSection"></section>
+
+    <!-- Grid/List section -->
+    <section id="gridListSection" class="hidden">
+      <div class="grid-list-header">
+        <h2 id="gridListHeading">All books</h2>
+
+        <div class="grid-list-view-mode">
+          <div class="toggle-group">
+            <button id="modeGrid" class="active">Grid</button>
+            <button id="modeList">List</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="gridListContainer" class="grid"></div>
+    </section>
+
+  </main>
+
+  <script>
+    const GENRE_PILL_MAP = {
+      "Adventure & Survival": "Adventure",
+      "Classics & Canon": "Classics",
+      "Fantasy Worlds": "Fantasy",
+      "Historical & War": "Historical",
+      "Horror & Supernatural": "Horror",
+      "Humour & Feel-Good": "Humour",
+      "Mystery, Crime & Thrillers": "Mystery",
+      "Non-Fiction, Biography & Memoir": "Non-Fiction",
+      "Poetry, Verse & Short Stories": "Poetry",
+      "Reference, Study & Dictionaries": "Reference",
+      "Romance & Relationships": "Romance",
+      "School, Family & Growing Up": "School",
+      "Sci-Fi & Dystopia": "Sci-Fi",
+      "Social Issues & Justice": "Social",
+      "Sport": "Sport"
+    };
+
+    const STATE = {
+      books: [],
+      genres: [],
+      filteredBooks: []
+    };
+
+    /* ---------------------------------------------
+       LOAD BOOKS
+    --------------------------------------------- */
+    async function loadBooks() {
+      const res = await fetch('books.json');
+      const data = await res.json();
+
+      const sdBooks = data.filter(b => b.division === 'SD-English');
+
+      STATE.books = sdBooks;
+      STATE.filteredBooks = sdBooks.slice();
+
+      STATE.genres = Array.from(
+        new Set(sdBooks.flatMap(b => b.genres || []))
+      ).sort();
+
+      populateGenreFilter();
+      renderNetflix();
+
+      // ensure scroll works every time Netflix rows are created
+      enableHorizontalWheelScroll();
+      enableDragScroll();
+
+      renderGridOrList('grid');
+    }
+
+    /* ---------------------------------------------
+       GENRE FILTER DROPDOWN
+    --------------------------------------------- */
+    function populateGenreFilter() {
+      const select = document.getElementById('genreFilter');
+      select.innerHTML = '<option value="">All genres</option>';
+
+      STATE.genres.forEach(g => {
+        const opt = document.createElement('option');
+        opt.value = g;
+        opt.textContent = g;
+        select.appendChild(opt);
+      });
+    }
+
+    /* ---------------------------------------------
+       NETFLIX VIEW
+    --------------------------------------------- */
+    function renderNetflix() {
+      const container = document.getElementById('netflixSection');
+      container.innerHTML = '';
+
+      STATE.genres.forEach(genre => {
+        const rowBooks = STATE.books.filter(b => (b.genres || []).includes(genre));
+        if (!rowBooks.length) return;
+
+        const row = document.createElement('div');
+        row.className = 'genre-row';
+
+        const header = document.createElement('div');
+        header.className = 'genre-row-header';
+
+        const h2 = document.createElement('h2');
+        h2.textContent = genre;
+
+        const count = document.createElement('small');
+        count.textContent = `${rowBooks.length} book${rowBooks.length === 1 ? '' : 's'}`;
+
+        header.appendChild(h2);
+        header.appendChild(count);
+
+        const scroller = document.createElement('div');
+        scroller.className = 'genre-scroll';
+
+        rowBooks.forEach(book => {
+          scroller.appendChild(createGridCard(book));
+        });
+
+        row.appendChild(header);
+        row.appendChild(scroller);
+        container.appendChild(row);
+      });
+    }
+
+    /* ---------------------------------------------
+       GRID CARDS
+    --------------------------------------------- */
+    function createGridCard(book) {
+      const card = document.createElement('article');
+      card.className = 'book-card';
+
+      const img = document.createElement('img');
+      img.src = book.image;
+      img.alt = `${book.title} cover`;
+      img.loading = 'lazy';
+
+      const body = document.createElement('div');
+      body.className = 'book-body';
+
+      const title = document.createElement('h3');
+      title.className = 'book-title';
+      title.textContent = book.title;
+
+      const author = document.createElement('div');
+      author.className = 'book-author';
+      author.textContent = book.author;
+
+      const meta = document.createElement('div');
+      meta.className = 'book-meta';
+      meta.textContent = book.reading_level || '';
+
+      const pills = createPills(book);
+
+      body.appendChild(title);
+      body.appendChild(author);
+      body.appendChild(meta);
+      body.appendChild(pills);
+
+      card.appendChild(img);
+      card.appendChild(body);
+      return card;
+    }
+
+    /* ---------------------------------------------
+       LIST CARDS
+    --------------------------------------------- */
+    function createListCard(book) {
+      const card = document.createElement('article');
+      card.className = 'book-card-list';
+
+      const img = document.createElement('img');
+      img.src = book.image;
+      img.alt = `${book.title} cover`;
+      img.loading = 'lazy';
+
+      const body = document.createElement('div');
+      body.className = 'book-body';
+
+      const title = document.createElement('h3');
+      title.className = 'book-title';
+      title.textContent = book.title;
+
+      const author = document.createElement('div');
+      author.className = 'book-author';
+      author.textContent = book.author;
+
+      const meta = document.createElement('div');
+      meta.className = 'book-meta';
+      const genres = (book.genres || []).join(', ');
+      meta.textContent = `${book.reading_level || ''}${genres ? ' · ' + genres : ''}`;
+
+      const desc = document.createElement('div');
+      desc.className = 'book-description';
+      desc.textContent = book.description || '';
+
+      const pills = createPills(book);
+
+      body.appendChild(title);
+      body.appendChild(author);
+      body.appendChild(meta);
+      body.appendChild(desc);
+      body.appendChild(pills);
+
+      card.appendChild(img);
+      card.appendChild(body);
+      return card;
+    }
+
+    /* ---------------------------------------------
+       PILLS (Shared)
+    --------------------------------------------- */
+    function createPills(book) {
+      const pills = document.createElement('div');
+      pills.className = 'pills';
+
+      const pillSet = new Set(
+        (book.genre_pills && book.genre_pills.length)
+          ? book.genre_pills
+          : (book.genres || []).map(g => GENRE_PILL_MAP[g] || g)
+      );
+
+      pillSet.forEach(p => {
+        const span = document.createElement('span');
+        span.className = p.match(/Explorer|Adventurer|Voyager|Galactic/i)
+          ? 'pill-level'
+          : 'pill-genre';
+        span.textContent = p;
+        pills.appendChild(span);
+      });
+
+      return pills;
+    }
+
+    /* ---------------------------------------------
+       GRID / LIST LOGIC
+    --------------------------------------------- */
+    function renderGridOrList(mode) {
+      const container = document.getElementById('gridListContainer');
+      const list = STATE.filteredBooks;
+
+      container.innerHTML = '';
+
+      if (!list.length) {
+        container.innerHTML = '<div class="no-results">No matching books found.</div>';
+        return;
+      }
+
+      container.className = mode;
+
+      list.forEach(book => {
+        container.appendChild(
+          mode === 'grid' ? createGridCard(book) : createListCard(book)
+        );
+      });
+    }
+
+    /* ---------------------------------------------
+       HORIZONTAL SCROLL
+    --------------------------------------------- */
+    function enableHorizontalWheelScroll() {
+      document.querySelectorAll('.genre-scroll').forEach(scroller => {
+        scroller.addEventListener('wheel', evt => {
+          if (evt.deltaY === 0) return;
+          evt.preventDefault();
+          scroller.scrollLeft += evt.deltaY;
+        }, { passive: false });
+      });
+    }
+
+    function enableDragScroll() {
+      document.querySelectorAll('.genre-scroll').forEach(scroller => {
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        scroller.addEventListener('mousedown', e => {
+          isDown = true;
+          scroller.classList.add('dragging');
+          startX = e.pageX - scroller.offsetLeft;
+          scrollLeft = scroller.scrollLeft;
+        });
+
+        scroller.addEventListener('mouseleave', () => {
+          isDown = false;
+          scroller.classList.remove('dragging');
+        });
+
+        scroller.addEventListener('mouseup', () => {
+          isDown = false;
+          scroller.classList.remove('dragging');
+        });
+
+        scroller.addEventListener('mousemove', e => {
+          if (!isDown) return;
+          e.preventDefault();
+          const x = e.pageX - scroller.offsetLeft;
+          scroller.scrollLeft = scrollLeft - (x - startX) * 2;
+        });
+      });
+    }
+
+    /* ---------------------------------------------
+       FILTERS + TOGGLES
+    --------------------------------------------- */
+    function applyFilters() {
+      const q = document.getElementById('searchInput').value.trim().toLowerCase();
+      const genre = document.getElementById('genreFilter').value;
+
+      STATE.filteredBooks = STATE.books.filter(b => {
+        const matchesText =
+          !q ||
+          (b.title && b.title.toLowerCase().includes(q)) ||
+          (b.author && b.author.toLowerCase().includes(q)) ||
+          (b.genres || []).some(g => g.toLowerCase().includes(q));
+
+        const matchesGenre = !genre || (b.genres || []).includes(genre);
+
+        return matchesText && matchesGenre;
+      });
+
+      const heading = document.getElementById('gridListHeading');
+      heading.textContent =
+        (!q && !genre)
+          ? 'All books'
+          : `Search results (${STATE.filteredBooks.length})`;
+
+      const isListMode = document.getElementById('modeList').classList.contains('active');
+      renderGridOrList(isListMode ? 'list' : 'grid');
+    }
+
+    function showNetflix() {
+      document.getElementById('viewNetflix').classList.add('active');
+      document.getElementById('viewGridList').classList.remove('active');
+
+      document.getElementById('netflixSection').classList.remove('hidden');
+      document.getElementById('gridListSection').classList.add('hidden');
+
+      renderNetflix();
+      enableHorizontalWheelScroll();
+      enableDragScroll();
+    }
+
+    function showGridList() {
+      document.getElementById('viewNetflix').classList.remove('active');
+      document.getElementById('viewGridList').classList.add('active');
+
+      document.getElementById('netflixSection').classList.add('hidden');
+      document.getElementById('gridListSection').classList.remove('hidden');
+
+      applyFilters();
+    }
+
+    /* ---------------------------------------------
+       EVENT BINDING
+    --------------------------------------------- */
+    function initEvents() {
+      const search = document.getElementById('searchInput');
+      const genreFilter = document.getElementById('genreFilter');
+
+      search.addEventListener('input', () => {
+        if (search.value.trim() || genreFilter.value) {
+          showGridList();
+        }
+        applyFilters();
+      });
+
+      genreFilter.addEventListener('change', () => {
+        if (search.value.trim() || genreFilter.value) {
+          showGridList();
+        }
+        applyFilters();
+      });
+
+      document.getElementById('viewNetflix').addEventListener('click', () => {
+        showNetflix();
+      });
+
+      document.getElementById('viewGridList').addEventListener('click', () => {
+        showGridList();
+        applyFilters();
+      });
+
+      document.getElementById('modeGrid').addEventListener('click', () => {
+        document.getElementById('modeGrid').classList.add('active');
+        document.getElementById('modeList').classList.remove('active');
+        renderGridOrList('grid');
+      });
+
+      document.getElementById('modeList').addEventListener('click', () => {
+        document.getElementById('modeList').classList.add('active');
+        document.getElementById('modeGrid').classList.remove('active');
+        renderGridOrList('list');
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initEvents();
+      loadBooks();
+    });
+  </script>
+</body>
+</html>
