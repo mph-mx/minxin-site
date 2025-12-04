@@ -21,6 +21,17 @@
     <div class="search-block">
       <input id="searchInput" type="search" placeholder="Search title, author, or genre…">
 
+      <!-- New Reading Level Filter -->
+      <div class="filter-group">
+        <select id="levelFilter">
+          <option value="">All Levels</option>
+          <option value="Explorer">Explorer</option>
+          <option value="Adventurer">Adventurer</option>
+          <option value="Voyager">Voyager</option>
+          <option value="Galactic">Galactic</option>
+        </select>
+      </div>
+
       <div class="genre-filter">
         <select id="genreFilter">
           <option value="">All genres</option>
@@ -35,6 +46,55 @@
   </header>
 
   <main>
+
+    <!-- NEW INTRO SECTION (Collapsible) -->
+    <section class="intro-section">
+      <div class="intro-content">
+        <h2>Welcome to the Minxin Book List 2025!</h2>
+        <p>This curated selection of books is tailored specifically for teenagers, offering a range of genres, themes, and reading levels. Reading for pleasure opens doors to new worlds, builds empathy, and strengthens language skills.</p>
+        
+        <!-- Toggle Button -->
+        <div style="margin-top: 25px;">
+           <button id="btnToggleLevels" onclick="toggleLevelInfo()" style="
+              background: white; 
+              border: 1px solid #003366; 
+              color: #003366; 
+              padding: 10px 24px; 
+              border-radius: 50px; 
+              font-size: 0.9rem; 
+              cursor: pointer; 
+              font-weight: 600;
+              transition: all 0.2s ease;
+              display: inline-flex;
+              align-items: center;
+              gap: 8px;
+              box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+              <span>How do Reading Levels work?</span>
+              <span id="toggleArrow" style="font-size: 0.8rem;">▼</span>
+           </button>
+        </div>
+      </div>
+
+      <!-- Grid hidden by default -->
+      <div id="levelGrid" class="level-grid hidden" style="margin-top: 30px; animation: fadeIn 0.3s ease;">
+        <div class="level-card" data-level="Explorer" onclick="selectLevel('Explorer')">
+          <h3>Explorer</h3>
+          <p>Perfect if you want a story you can jump into quickly. The chapters are usually shorter, the language is clear, and the plots move fast.</p>
+        </div>
+        <div class="level-card" data-level="Adventurer" onclick="selectLevel('Adventurer')">
+          <h3>Adventurer</h3>
+          <p>A step up: stories are longer and ideas deeper. You’ll meet more complex characters and richer settings. Great for a bigger adventure.</p>
+        </div>
+        <div class="level-card" data-level="Voyager" onclick="selectLevel('Voyager')">
+          <h3>Voyager</h3>
+          <p>For readers who like to get completely lost in a story. More detailed language, layered plots, and thought-provoking themes.</p>
+        </div>
+        <div class="level-card" data-level="Galactic" onclick="selectLevel('Galactic')">
+          <h3>Galactic</h3>
+          <p>Epic journeys with big ideas and powerful writing. Advanced vocabulary and mature themes. For confident readers ready for a challenge.</p>
+        </div>
+      </div>
+    </section>
 
     <!-- Netflix-style rows -->
     <section id="netflixSection"></section>
@@ -56,6 +116,14 @@
     </section>
 
   </main>
+
+  <!-- Add simple fade in animation for the toggle -->
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 
   <script>
     const GENRE_PILL_MAP = {
@@ -169,11 +237,11 @@
       const card = document.createElement('article');
       card.className = 'book-card';
 
-      // 1. Create the Overlay (New)
+      // 1. Create the Overlay
       const overlay = document.createElement('div');
       overlay.className = 'book-overlay';
       overlay.textContent = book.description || 'No description available.';
-	
+      
       const img = document.createElement('img');
       img.src = book.image;
       img.alt = `${book.title} cover`;
@@ -202,7 +270,7 @@
       body.appendChild(pills);
 
       card.appendChild(overlay);
-	  card.appendChild(img);
+      card.appendChild(img);
       card.appendChild(body);
       return card;
     }
@@ -299,8 +367,7 @@
         );
       });
     }
-
-	  
+    
     /* ---------------------------------------------
        HORIZONTAL SCROLL
     --------------------------------------------- */
@@ -349,9 +416,36 @@
     /* ---------------------------------------------
        FILTERS + TOGGLES
     --------------------------------------------- */
+    
+    // NEW: Toggle function for the Reading Level Grid
+    function toggleLevelInfo() {
+      const grid = document.getElementById('levelGrid');
+      const arrow = document.getElementById('toggleArrow');
+      const isHidden = grid.classList.contains('hidden');
+      
+      if (isHidden) {
+        grid.classList.remove('hidden');
+        arrow.textContent = '▲';
+      } else {
+        grid.classList.add('hidden');
+        arrow.textContent = '▼';
+      }
+    }
+
+    // Helper function to select level from the Intro cards
+    function selectLevel(levelName) {
+      document.getElementById('levelFilter').value = levelName;
+      // Scroll up to search/filter area
+      document.querySelector('header').scrollIntoView({ behavior: 'smooth' });
+      // Trigger update
+      showGridList();
+      applyFilters();
+    }
+
     function applyFilters() {
       const q = document.getElementById('searchInput').value.trim().toLowerCase();
       const genre = document.getElementById('genreFilter').value;
+      const level = document.getElementById('levelFilter').value;
 
       STATE.filteredBooks = STATE.books.filter(b => {
         const matchesText =
@@ -361,15 +455,20 @@
           (b.genres || []).some(g => g.toLowerCase().includes(q));
 
         const matchesGenre = !genre || (b.genres || []).includes(genre);
+        
+        // NEW: Filter by reading level
+        const matchesLevel = !level || (b.reading_level === level);
 
-        return matchesText && matchesGenre;
+        return matchesText && matchesGenre && matchesLevel;
       });
 
       const heading = document.getElementById('gridListHeading');
-      heading.textContent =
-        (!q && !genre)
-          ? 'All books'
-          : `Search results (${STATE.filteredBooks.length})`;
+      
+      let label = 'All books';
+      if (q || genre || level) {
+         label = `Search results (${STATE.filteredBooks.length})`;
+      }
+      heading.textContent = label;
 
       const isListMode = document.getElementById('modeList').classList.contains('active');
       renderGridOrList(isListMode ? 'list' : 'grid');
@@ -381,7 +480,7 @@
 
       document.getElementById('netflixSection').classList.remove('hidden');
       document.getElementById('gridListSection').classList.add('hidden');
-
+      
       renderNetflix();
       enableHorizontalWheelScroll();
       enableDragScroll();
@@ -403,16 +502,25 @@
     function initEvents() {
       const search = document.getElementById('searchInput');
       const genreFilter = document.getElementById('genreFilter');
+      const levelFilter = document.getElementById('levelFilter');
 
       search.addEventListener('input', () => {
-        if (search.value.trim() || genreFilter.value) {
+        if (search.value.trim() || genreFilter.value || levelFilter.value) {
           showGridList();
         }
         applyFilters();
       });
 
       genreFilter.addEventListener('change', () => {
-        if (search.value.trim() || genreFilter.value) {
+        if (search.value.trim() || genreFilter.value || levelFilter.value) {
+          showGridList();
+        }
+        applyFilters();
+      });
+
+      // NEW: Level filter listener
+      levelFilter.addEventListener('change', () => {
+        if (search.value.trim() || genreFilter.value || levelFilter.value) {
           showGridList();
         }
         applyFilters();
