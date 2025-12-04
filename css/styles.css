@@ -167,34 +167,48 @@ header {
   position: relative; 
 }
 
-/* HOVER OVERLAY STYLES */
+/* MODERN HOVER OVERLAY */
 .book-overlay {
   position: absolute;
-  /* UPDATED: Cover only the bottom 55% of the card, leaving the top image visible */
-  top: 45%;
-  bottom: 0;
+
+  /* Reveal just the lower portion of the card */
+  top: 46%;      /* cleanly below image */
   left: 0;
   right: 0;
-  
-  background: var(--accent-primary);
+  bottom: 0;
+
+  background: rgba(0, 0, 0, 0.70);  /* softer, semi-transparent dark */
   color: white;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  padding: 15px;
-  font-size: 0.85rem;
-  line-height: 1.4;
+
   display: flex;
-  align-items: center;
+  align-items: flex-start;          /* text starts at top */
   justify-content: center;
   text-align: center;
+  padding: 28px 16px 20px 16px;     /* natural “reading” padding */
+
+  opacity: 0;
+  transform: translateY(10px);      /* subtle upward movement */
+  transition: 
+    opacity 0.25s ease,
+    transform 0.25s ease;
+
   overflow-y: auto;
-  z-index: 10;
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(3px);       /* modern frosted glass */
   pointer-events: none;
-  
-  /* Optional: Add a top border to separate it cleanly from the image */
-  border-top: 1px solid rgba(255,255,255,0.2);
+
+  z-index: 10;
+
+  /* soft top fade so the edge is not harsh */
+  mask-image: linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%);
 }
+
+/* Hover trigger */
+.book-card:hover .book-overlay {
+  opacity: 1;
+  transform: translateY(0);   /* slight slide up into place */
+}
+
 
 .book-card:hover .book-overlay {
   opacity: 0.98; /* Increased opacity slightly since it's smaller */
