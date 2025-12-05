@@ -1,38 +1,52 @@
+<!--[file name]: pd.html
+// [file content begin]  -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Primary Division Reading List</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/styles.css?v=8">
 </head>
 
 <body class="pd">
-  <header>
-    <div class="title-block">
-      <a href="index.html" class="back-link">← Back</a>
-      <img src="images/logo.png" alt="Minxin Logo" class="header-logo">
-      <div>
-        <h1>Primary Division Reading List</h1>
-        <p>Browse by genre, or search all books.</p>
-      </div>
+<header>
+  <div class="title-block">
+    <a href="index.html" class="back-link">← Back</a>
+    <img src="images/logo.png" alt="Minxin Logo" class="header-logo">
+    <div>
+      <h1>Primary Division Reading List</h1>
+      <p>Browse by genre, or search all books.</p>
+    </div>
+  </div>
+
+  <div class="search-block">
+    <input id="searchInput" type="search" placeholder="Search title, author, or genre…">
+
+    <div class="genre-filter">
+      <select id="genreFilter">
+        <option value="">All genres</option>
+      </select>
     </div>
 
-    <div class="search-block">
-      <input id="searchInput" type="search" placeholder="Search title, author, or genre…">
-
-      <div class="genre-filter">
-        <select id="genreFilter">
-          <option value="">All genres</option>
-        </select>
-      </div>
-
-      <div class="toggle-group" id="viewToggle">
-        <button id="viewNetflix" class="active">Browse</button>
-        <button id="viewGridList">All Books</button>
-      </div>
+    <div class="toggle-group" id="viewToggle">
+      <button id="viewNetflix" class="active">Browse</button>
+      <button id="viewGridList">All Books</button>
+      <button id="filterFavorites" class="fav-toggle">❤️ Favorites</button>
     </div>
-  </header>
+    
+    <!-- Export Favorites Button -->
+    <button id="exportFavoritesBtn" class="fav-toggle hidden" type="button" 
+            title="Export your favorites list">
+      📥 Export
+    </button>
+    
+    <button id="darkModeToggle" class="fav-toggle" type="button">🌙 Dark</button>
+
+  </div>
+
+</header>
+
 
   <main>
 
@@ -57,6 +71,7 @@
 
   </main>
 
+  <script src="js/book-ui.js"></script>
   <script>
     const GENRE_PILL_MAP = {
       "Adventure & Survival": "Adventure",
@@ -168,12 +183,11 @@
       const card = document.createElement('article');
       card.className = 'book-card';
 
-            // 1. Create the Overlay (New)
       const overlay = document.createElement('div');
       overlay.className = 'book-overlay';
       overlay.textContent = book.description || 'No description available.';
-	  
-	  const img = document.createElement('img');
+
+      const img = document.createElement('img');
       img.src = book.image;
       img.alt = `${book.title} cover`;
       img.loading = 'lazy';
@@ -201,10 +215,16 @@
       body.appendChild(pills);
 
       card.appendChild(overlay);
-	  card.appendChild(img);
+      card.appendChild(img);
       card.appendChild(body);
+
+      if (window.BookUI && typeof BookUI.attachCard === 'function') {
+        BookUI.attachCard(card, book, STATE.books);
+      }
+
       return card;
     }
+
 
     /* ---------------------------------------------
        LIST CARD
@@ -248,40 +268,46 @@
 
       card.appendChild(img);
       card.appendChild(body);
+
+      if (window.BookUI && typeof BookUI.attachCard === 'function') {
+        BookUI.attachCard(card, book, STATE.books);
+      }
+
       return card;
     }
+
 
     /* ---------------------------------------------
        PILLS (Shared)
     --------------------------------------------- */
-	function createPills(book) {
-	  const pills = document.createElement('div');
-	  pills.className = 'pills';
+    function createPills(book) {
+      const pills = document.createElement('div');
+      pills.className = 'pills';
 
-	  // Age band pill first (Grades K-2, etc.)
-	  if (book.age_band) {
-		const ageSpan = document.createElement('span');
-		ageSpan.className = 'pill-age';
-		ageSpan.textContent = book.age_band;
-		pills.appendChild(ageSpan);
-	  }
+      // Age band pill first (Grades K-2, etc.)
+      if (book.age_band) {
+        const ageSpan = document.createElement('span');
+        ageSpan.className = 'pill-age';
+        ageSpan.textContent = book.age_band;
+        pills.appendChild(ageSpan);
+      }
 
-	  // Genre pills (Picture Book, Fiction, Graphic Novel, Non-Fiction)
-	  const pillSource = (book.genre_pills && book.genre_pills.length)
-		? book.genre_pills
-		: (book.genres || []);
+      // Genre pills (Picture Book, Fiction, Graphic Novel, Non-Fiction)
+      const pillSource = (book.genre_pills && book.genre_pills.length)
+        ? book.genre_pills
+        : (book.genres || []);
 
-	  const pillSet = new Set(pillSource);
+      const pillSet = new Set(pillSource);
 
-	  pillSet.forEach(p => {
-		const span = document.createElement('span');
-		span.className = 'pill-genre';
-		span.textContent = p;
-		pills.appendChild(span);
-	  });
+      pillSet.forEach(p => {
+        const span = document.createElement('span');
+        span.className = 'pill-genre';
+        span.textContent = p;
+        pills.appendChild(span);
+      });
 
-	  return pills;
-	}
+      return pills;
+    }
 
 
     /* ---------------------------------------------
@@ -353,11 +379,54 @@
     }
 
     /* ---------------------------------------------
+       EXPORT BUTTON LOGIC (UI Only)
+       The actual generation is now in book-ui.js
+    --------------------------------------------- */
+    function updateExportButtonVisibility() {
+      const exportBtn = document.getElementById('exportFavoritesBtn');
+      const favToggle = document.getElementById('filterFavorites');
+      const favoritesOnly = favToggle && favToggle.classList.contains('active');
+      
+      // Show export button only when viewing favorites and there are favorites
+      if (favoritesOnly && window.BookUI) {
+        const favCount = BookUI.getFavorites().length;
+        if (favCount > 0) {
+          exportBtn.classList.remove('hidden');
+          exportBtn.textContent = `📥 Export`;
+          return;
+        }
+      }
+      
+      exportBtn.classList.add('hidden');
+      exportBtn.textContent = '📥 Export';
+    }
+
+    function handleExportClick() {
+      const btn = document.getElementById('exportFavoritesBtn');
+      if (!window.BookUI) return;
+
+      // 1. Call the centralized function
+      BookUI.downloadFavoritesAsTxt(STATE.books, 'Primary Division');
+
+      // 2. Visual Feedback (UI)
+      const originalText = btn.textContent;
+      btn.textContent = '✅ Exported!';
+      btn.classList.add('exporting');
+      
+      setTimeout(() => {
+        btn.textContent = originalText;
+        btn.classList.remove('exporting');
+      }, 2000);
+    }
+
+    /* ---------------------------------------------
        FILTERS + TOGGLES
     --------------------------------------------- */
     function applyFilters() {
       const q = document.getElementById('searchInput').value.trim().toLowerCase();
       const genre = document.getElementById('genreFilter').value;
+      const favToggle = document.getElementById('filterFavorites');
+      const favoritesOnly = favToggle && favToggle.classList.contains('active');
 
       STATE.filteredBooks = STATE.books.filter(b => {
         const matchesText =
@@ -368,18 +437,40 @@
 
         const matchesGenre = !genre || (b.genres || []).includes(genre);
 
-        return matchesText && matchesGenre;
+        const matchesFav =
+          !favoritesOnly ||
+          (window.BookUI && BookUI.isFavorite && BookUI.isFavorite(b));
+
+        return matchesText && matchesGenre && matchesFav;
       });
 
       const heading = document.getElementById('gridListHeading');
       heading.textContent =
-        (!q && !genre)
+        (!q && !genre && !favoritesOnly)
           ? 'All books'
           : `Search results (${STATE.filteredBooks.length})`;
 
+      const container = document.getElementById('gridListContainer');
       const isListMode = document.getElementById('modeList').classList.contains('active');
+      
+      // Handle favorites empty state
+      if (favoritesOnly && STATE.filteredBooks.length === 0) {
+        container.innerHTML = `
+          <div class="favorites-empty">
+            ❤️ No favorites yet.<br>
+            Tap the heart icon on any book to add it here.
+          </div>
+        `;
+        updateExportButtonVisibility();
+        return;
+      }
+      
+      // Update export button visibility
+      updateExportButtonVisibility();
+      
       renderGridOrList(isListMode ? 'list' : 'grid');
     }
+
 
     function showNetflix() {
       document.getElementById('viewNetflix').classList.add('active');
@@ -391,6 +482,9 @@
       renderNetflix();
       enableHorizontalWheelScroll();
       enableDragScroll();
+      
+      // Hide export button in Netflix view
+      document.getElementById('exportFavoritesBtn').classList.add('hidden');
     }
 
     function showGridList() {
@@ -409,7 +503,9 @@
     function initEvents() {
       const search = document.getElementById('searchInput');
       const genreFilter = document.getElementById('genreFilter');
-
+      const favToggle = document.getElementById('filterFavorites');
+      const exportBtn = document.getElementById('exportFavoritesBtn');
+      
       search.addEventListener('input', () => {
         if (search.value.trim() || genreFilter.value) {
           showGridList();
@@ -421,6 +517,25 @@
         if (search.value.trim() || genreFilter.value) {
           showGridList();
         }
+        applyFilters();
+      });
+      
+      if (favToggle) {
+        favToggle.addEventListener('click', () => {
+          favToggle.classList.toggle('active');
+          showGridList();
+          applyFilters();
+        });
+      }
+      
+      // NEW: simplified handler calling BookUI
+      if (exportBtn) {
+        exportBtn.addEventListener('click', handleExportClick);
+      }
+
+      // Update export button visibility whenever favorites change
+      document.addEventListener('mxFavoritesChanged', () => {
+        updateExportButtonVisibility();
         applyFilters();
       });
 

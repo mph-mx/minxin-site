@@ -1,350 +1,345 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <title>Secondary Division Reading List (Chinese)</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="css/styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>中学部阅读书单（中文）</title>
+  <link rel="stylesheet" href="css/styles.css?v=7">
 </head>
 
 <body class="sd-cn">
-  <header>
-    <div class="title-block">
-      <a href="index.html" class="back-link">← Back</a>
-      <img src="images/logo.png" alt="Minxin Logo" class="header-logo">
-      <div>
-        <h1>Secondary Division Reading List (Chinese)</h1>
-        <p>Browse by genre or switch to all books and search.</p>
-      </div>
-    </div>
 
-    <div class="search-block">
-      <input id="searchInput" type="search" placeholder="Search Chinese books…" disabled>
-      <select id="genreFilter" disabled>
-        <option value="">All genres</option>
+<header>
+  <div class="title-block">
+    <a href="index.html" class="back-link">← 返回</a>
+    <img src="images/logo.png?v=4" alt="Minxin Logo" class="header-logo">
+    <div>
+      <h1>中学部阅读书单（中文）</h1>
+      <p>按类别浏览，或查看全部书籍。</p>
+    </div>
+  </div>
+
+  <div class="search-block">
+    <input id="searchInput" type="search" placeholder="搜索书名、作者或类别…">
+
+    <div class="genre-filter">
+      <select id="genreFilter">
+        <option value="">全部类别</option>
       </select>
-      <div class="view-toggle">
-        <button id="btnBrowse" class="active" disabled>Browse</button>
-        <button id="btnAll" disabled>All books</button>
-      </div>
-    </div>
-  </header>
-
-  <main>
-
-    <!-- COMING SOON BANNER -->
-    <div class="coming-soon-banner">
-      <strong>Coming Soon:</strong> The full Secondary Division Chinese Reading List will be available here soon.
     </div>
 
-    <!-- Browse / Netflix rows -->
-    <section id="netflixSection" class="hidden"></section>
+    <div class="toggle-group" id="viewToggle">
+      <button id="viewNetflix" class="active">浏览</button>
+      <button id="viewGridList">全部书籍</button>
+      <button id="filterFavorites" class="fav-toggle">❤️ 收藏</button>
+      <button id="darkModeToggle" class="fav-toggle">🌙 夜间</button>
+    </div>
+  </div>
+</header>
 
-    <!-- All Books view -->
-    <section id="gridListSection" class="hidden">
-      <div class="grid-list-header">
-        <h2 id="gridListHeading">All books</h2>
-        <div class="grid-list-view-mode">
-          <button id="modeGrid" class="active" disabled>Grid</button>
-          <button id="modeList" disabled>List</button>
-        </div>
-      </div>
-      <div id="gridListContainer" class="grid"></div>
-    </section>
+<main>
 
-  </main>
+  <!-- Netflix风格横排分类 -->
+  <div id="genreRowsContainer"></div>
 
-  <script>
-    const GENRE_PILL_MAP = {
-      "Adventure & Survival": "Adventure",
-      "Classics & Canon": "Classics",
-      "Fantasy Worlds": "Fantasy",
-      "Historical & War": "Historical",
-      "Horror & Supernatural": "Horror",
-      "Humour & Feel-Good": "Humour",
-      "Mystery, Crime & Thrillers": "Mystery",
-      "Non-Fiction, Biography & Memoir": "Non-Fiction",
-      "Poetry, Verse & Short Stories": "Poetry",
-      "Reference, Study & Dictionaries": "Reference",
-      "Romance & Relationships": "Romance",
-      "School, Family & Growing Up": "School",
-      "Sci-Fi & Dystopia": "Sci-Fi",
-      "Social Issues & Justice": "Social",
-      "Sport": "Sport"
-    };
+  <!-- 全部书籍 -->
+  <section id="gridListSection" class="hidden">
+    <h2 id="gridListHeading">全部书籍</h2>
+    <div id="gridListContainer" class="grid"></div>
+  </section>
 
-    const STATE = {
-      books: [],
-      genres: [],
-      filteredBooks: []
-    };
+</main>
 
-    async function loadBooks() {
-      const res = await fetch('books.json');
-      const data = await res.json();
+<script src="js/book-ui.js?v=4"></script>
 
-      // CN division
-      const cnBooks = data.filter(b => b.division === 'SD-Chinese');
+<script>
+const STATE = {
+  books: [],
+  filteredBooks: []
+};
 
-      STATE.books = cnBooks;
-      STATE.filteredBooks = cnBooks.slice();
-      STATE.genres = Array.from(new Set(cnBooks.flatMap(b => b.genres || []))).sort();
+/* ---------------------------------------------------------
+   UTILITIES
+--------------------------------------------------------- */
+function createPills(book) {
+  const wrap = document.createElement("div");
 
-      // If books exist (later), we auto-enable controls
-      if (cnBooks.length > 0) {
-        enableControls();
-        populateGenreFilter();
-        renderNetflix();
-        enableHorizontalWheelScroll();
-        enableDragScroll();
-        renderGridOrList('grid');
-      }
-    }
-
-    function enableControls() {
-      document.getElementById('searchInput').disabled = false;
-      document.getElementById('genreFilter').disabled = false;
-      document.getElementById('btnBrowse').disabled = false;
-      document.getElementById('btnAll').disabled = false;
-      document.getElementById('modeGrid').disabled = false;
-      document.getElementById('modeList').disabled = false;
-    }
-
-    function populateGenreFilter() {
-      const select = document.getElementById('genreFilter');
-      select.innerHTML = '<option value="">All genres</option>';
-      STATE.genres.forEach(g => {
-        const opt = document.createElement('option');
-        opt.value = g;
-        opt.textContent = g;
-        select.appendChild(opt);
-      });
-    }
-
-    function renderNetflix() {
-      const container = document.getElementById('netflixSection');
-      container.innerHTML = '';
-
-      STATE.genres.forEach(genre => {
-        const rowBooks = STATE.books.filter(b => (b.genres || []).includes(genre));
-        if (!rowBooks.length) return;
-
-        const row = document.createElement('div');
-        row.className = 'genre-row';
-
-        const header = document.createElement('div');
-        header.className = 'genre-row-header';
-
-        const h2 = document.createElement('h2');
-        h2.textContent = genre;
-
-        const count = document.createElement('small');
-        count.textContent = `${rowBooks.length} book${rowBooks.length === 1 ? '' : 's'}`;
-
-        header.appendChild(h2);
-        header.appendChild(count);
-
-        const scroller = document.createElement('div');
-        scroller.className = 'genre-scroll';
-
-        rowBooks.forEach(book => {
-          const card = createGridCard(book);
-          scroller.appendChild(card);
-        });
-
-        row.appendChild(header);
-        row.appendChild(scroller);
-        container.appendChild(row);
-      });
-    }
-
-    function createGridCard(book) {
-      const card = document.createElement('article');
-      card.className = 'book-card';
-
-      // 1. Create the Overlay (New)
-      const overlay = document.createElement('div');
-      overlay.className = 'book-overlay';
-      overlay.textContent = book.description || 'No description available.';
-	  
-      const img = document.createElement('img');
-      img.src = book.image;
-      img.alt = `${book.title} cover`;
-      img.loading = 'lazy';
-
-      const body = document.createElement('div');
-      body.className = 'book-body';
-
-      const title = document.createElement('h3');
-      title.className = 'book-title';
-      title.textContent = book.title;
-
-      const author = document.createElement('div');
-      author.className = 'book-author';
-      author.textContent = book.author;
-
-      const meta = document.createElement('div');
-      meta.className = 'book-meta';
-      meta.textContent = book.reading_level || '';
-
-      const pills = document.createElement('div');
-      pills.className = 'pills';
-
-      const pillSet = new Set(
-        (book.genre_pills && book.genre_pills.length)
-          ? book.genre_pills
-          : (book.genres || []).map(g => GENRE_PILL_MAP[g] || g)
-      );
-
-      pillSet.forEach(p => {
-        const span = document.createElement('span');
-        span.className = p.match(/Explorer|Adventurer|Voyager|Galactic/i)
-          ? 'pill-level'
-          : 'pill-genre';
-        span.textContent = p;
-        pills.appendChild(span);
-      });
-
-      body.appendChild(title);
-      body.appendChild(author);
-      body.appendChild(meta);
-      body.appendChild(pills);
-
-	  card.appendChild(overlay);
-      card.appendChild(img);
-      card.appendChild(body);
-      return card;
-    }
-
-    function createListCard(book) {
-      const card = document.createElement('article');
-      card.className = 'book-card-list';
-
-      const img = document.createElement('img');
-      img.src = book.image;
-      img.alt = `${book.title} cover`;
-      img.loading = 'lazy';
-
-      const body = document.createElement('div');
-      body.className = 'book-body';
-
-      const title = document.createElement('h3');
-      title.className = 'book-title';
-      title.textContent = book.title;
-
-      const author = document.createElement('div');
-      author.className = 'book-author';
-      author.textContent = book.author;
-
-      const meta = document.createElement('div');
-      meta.className = 'book-meta';
-      const genres = (book.genres || []).join(', ');
-      meta.textContent = `${book.reading_level || ''}${genres ? ' · ' + genres : ''}`;
-
-      const desc = document.createElement('div');
-      desc.className = 'book-description';
-      desc.textContent = book.description || '';
-
-      const pills = document.createElement('div');
-      pills.className = 'pills';
-
-      const pillSet = new Set(
-        (book.genre_pills && book.genre_pills.length)
-          ? book.genre_pills
-          : (book.genres || []).map(g => GENRE_PILL_MAP[g] || g)
-      );
-
-      pillSet.forEach(p => {
-        const span = document.createElement('span');
-        span.className = p.match(/Explorer|Adventurer|Voyager|Galactic/i)
-          ? 'pill-level'
-          : 'pill-genre';
-        span.textContent = p;
-        pills.appendChild(span);
-      });
-
-      body.appendChild(title);
-      body.appendChild(author);
-      body.appendChild(meta);
-      body.appendChild(desc);
-      body.appendChild(pills);
-
-      card.appendChild(img);
-      card.appendChild(body);
-      return card;
-    }
-
-    function renderGridOrList(mode) {
-      const container = document.getElementById('gridListContainer');
-      const list = STATE.filteredBooks;
-      const currentMode = mode || (container.classList.contains('list')
-        ? 'list'
-        : 'grid');
-
-      container.innerHTML = '';
-      container.className = currentMode;
-
-      list.forEach(book => {
-        if (currentMode === 'grid') {
-          container.appendChild(createGridCard(book));
-        } else {
-          container.appendChild(createListCard(book));
-        }
-      });
-    }
-
-    function enableHorizontalWheelScroll() {
-      document.querySelectorAll('.genre-scroll').forEach(scroller => {
-        scroller.addEventListener('wheel', evt => {
-          if (evt.deltaY === 0) return;
-          evt.preventDefault();
-          scroller.scrollLeft += evt.deltaY;
-        }, { passive: false });
-      });
-    }
-
-    function enableDragScroll() {
-      document.querySelectorAll('.genre-scroll').forEach(scroller => {
-        let isDown = false;
-        let startX;
-        let scrollLeft;
-
-        scroller.addEventListener('mousedown', e => {
-          isDown = true;
-          scroller.classList.add('dragging');
-          startX = e.pageX - scroller.offsetLeft;
-          scrollLeft = scroller.scrollLeft;
-        });
-
-        scroller.addEventListener('mouseleave', () => {
-          isDown = false;
-          scroller.classList.remove('dragging');
-        });
-
-        scroller.addEventListener('mouseup', () => {
-          isDown = false;
-          scroller.classList.remove('dragging');
-        });
-
-        scroller.addEventListener('mousemove', e => {
-          if (!isDown) return;
-          e.preventDefault();
-          const x = e.pageX - scroller.offsetLeft;
-          const walk = (x - startX) * 2;
-          scroller.scrollLeft = scrollLeft - walk;
-        });
-      });
-    }
-
-    function initEvents() {
-      // Events will be enabled automatically when CN books exist in JSON
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      initEvents();
-      loadBooks();
+  if (book.genres) {
+    book.genres.forEach(g => {
+      const span = document.createElement("span");
+      span.className = "pill-genre";
+      span.textContent = g;
+      wrap.appendChild(span);
     });
-  </script>
+  }
 
+  if (book.age_band) {
+    const span = document.createElement("span");
+    span.className = "pill-level";
+    span.textContent = book.age_band;
+    wrap.appendChild(span);
+  }
+
+  return wrap;
+}
+
+/* ---------------------------------------------------------
+   CARD CREATORS
+--------------------------------------------------------- */
+function createGridCard(book) {
+  const card = document.createElement("article");
+  card.className = "book-card";
+
+  const overlay = document.createElement("div");
+  overlay.className = "book-overlay";
+  overlay.textContent = book.description || "暂无简介";
+
+  const img = document.createElement("img");
+  img.src = book.image;
+  img.alt = `${book.title} 封面`;
+  img.loading = "lazy";
+
+  const body = document.createElement("div");
+  body.className = "book-body";
+
+  const title = document.createElement("h3");
+  title.className = "book-title";
+  title.textContent = book.title;
+
+  const author = document.createElement("div");
+  author.className = "book-author";
+  author.textContent = book.author;
+
+  const meta = document.createElement("div");
+  meta.className = "book-meta";
+  meta.textContent = book.age_band || "";
+
+  const pills = createPills(book);
+
+  body.appendChild(title);
+  body.appendChild(author);
+  body.appendChild(meta);
+  body.appendChild(pills);
+
+  card.appendChild(overlay);
+  card.appendChild(img);
+  card.appendChild(body);
+
+  BookUI.attachCard(card, book, STATE.books);
+  return card;
+}
+
+function createListCard(book) {
+  const card = document.createElement("article");
+  card.className = "book-card-list";
+
+  const img = document.createElement("img");
+  img.src = book.image;
+  img.alt = `${book.title} 封面`;
+  img.loading = "lazy";
+
+  const body = document.createElement("div");
+  body.className = "book-body";
+
+  const title = document.createElement("h3");
+  title.className = "book-title";
+  title.textContent = book.title;
+
+  const author = document.createElement("div");
+  author.className = "book-author";
+  author.textContent = book.author;
+
+  const meta = document.createElement("div");
+  meta.className = "book-meta";
+  meta.textContent =
+    `${book.age_band || ""} · ${(book.genres || []).join("、")}`;
+
+  const desc = document.createElement("div");
+  desc.className = "book-description";
+  desc.textContent = book.description || "";
+
+  const pills = createPills(book);
+
+  body.appendChild(title);
+  body.appendChild(author);
+  body.appendChild(meta);
+  body.appendChild(desc);
+  body.appendChild(pills);
+
+  card.appendChild(img);
+  card.appendChild(body);
+
+  BookUI.attachCard(card, book, STATE.books);
+  return card;
+}
+
+/* ---------------------------------------------------------
+   APPLY FILTERS
+--------------------------------------------------------- */
+function applyFilters() {
+  const q = document.getElementById("searchInput").value.trim().toLowerCase();
+  const genre = document.getElementById("genreFilter").value;
+  const favToggle = document.getElementById("filterFavorites");
+  const favoritesOnly = favToggle && favToggle.classList.contains("active");
+
+  STATE.filteredBooks = STATE.books.filter(b => {
+    const matchesText =
+      !q ||
+      (b.title && b.title.toLowerCase().includes(q)) ||
+      (b.author && b.author.toLowerCase().includes(q)) ||
+      (b.genres || []).some(g => g.toLowerCase().includes(q));
+
+    const matchesGenre = !genre || (b.genres || []).includes(genre);
+    const matchesFav = !favoritesOnly || BookUI.isFavorite(b);
+
+    return matchesText && matchesGenre && matchesFav;
+  });
+
+  // ★ Correct "empty favorites" area
+  if (favoritesOnly && STATE.filteredBooks.length === 0) {
+    const container = document.getElementById("gridListContainer");
+    container.innerHTML = `
+      <div class="favorites-empty">
+        ❤️ 暂无收藏书籍。<br>
+        点击书籍右上角的红心即可收藏。
+      </div>
+    `;
+    return;
+  }
+
+  const heading = document.getElementById("gridListHeading");
+  heading.textContent =
+    !q && !genre && !favoritesOnly
+      ? "全部书籍"
+      : `搜索结果（${STATE.filteredBooks.length}）`;
+
+  renderGridOrList(isListMode());
+}
+
+function isListMode() {
+  return document.getElementById("viewGridList").classList.contains("active");
+}
+
+function renderGridOrList(mode) {
+  const container = document.getElementById("gridListContainer");
+  container.className = mode;
+  container.innerHTML = "";
+
+  STATE.filteredBooks.forEach(book => {
+    const card = mode === "list" ? createListCard(book) : createGridCard(book);
+    container.appendChild(card);
+  });
+}
+
+/* ---------------------------------------------------------
+   SHOW SECTIONS
+--------------------------------------------------------- */
+function showNetflix() {
+  document.getElementById("gridListSection").classList.add("hidden");
+  document.getElementById("genreRowsContainer").classList.remove("hidden");
+}
+
+function showGridList() {
+  document.getElementById("gridListSection").classList.remove("hidden");
+  document.getElementById("genreRowsContainer").classList.add("hidden");
+}
+
+/* ---------------------------------------------------------
+   GENRE ROWS
+--------------------------------------------------------- */
+function renderGenreRows() {
+  const container = document.getElementById("genreRowsContainer");
+  container.innerHTML = "";
+
+  const byGenre = {};
+  STATE.books.forEach(b => {
+    (b.genres || []).forEach(g => {
+      if (!byGenre[g]) byGenre[g] = [];
+      byGenre[g].push(b);
+    });
+  });
+
+  Object.entries(byGenre).forEach(([genre, books]) => {
+    const row = document.createElement("div");
+    row.className = "genre-row";
+
+    const header = document.createElement("div");
+    header.className = "genre-row-header";
+    header.innerHTML = `<h2>${genre}</h2>`;
+    row.appendChild(header);
+
+    const scroll = document.createElement("div");
+    scroll.className = "genre-scroll";
+
+    books.forEach(book => {
+      const card = createGridCard(book);
+      scroll.appendChild(card);
+    });
+
+    row.appendChild(scroll);
+    container.appendChild(row);
+  });
+}
+
+/* ---------------------------------------------------------
+   LOAD BOOKS
+--------------------------------------------------------- */
+async function loadBooks() {
+  const res = await fetch("books.json");
+  const data = await res.json();
+  STATE.books = data.sd_cn || [];
+
+  const genreSet = new Set();
+  STATE.books.forEach(b =>
+    (b.genres || []).forEach(g => genreSet.add(g))
+  );
+
+  const genreFilter = document.getElementById("genreFilter");
+  genreSet.forEach(g => {
+    const opt = document.createElement("option");
+    opt.value = g;
+    opt.textContent = g;
+    genreFilter.appendChild(opt);
+  });
+
+  renderGenreRows();
+}
+
+/* ---------------------------------------------------------
+   EVENTS
+--------------------------------------------------------- */
+function initEvents() {
+  document.getElementById("viewNetflix").addEventListener("click", () => {
+    document.getElementById("viewNetflix").classList.add("active");
+    document.getElementById("viewGridList").classList.remove("active");
+    showNetflix();
+  });
+
+  document.getElementById("viewGridList").addEventListener("click", () => {
+    document.getElementById("viewGridList").classList.add("active");
+    document.getElementById("viewNetflix").classList.remove("active");
+    showGridList();
+    applyFilters();
+  });
+
+  document.getElementById("genreFilter").addEventListener("change", applyFilters);
+  document.getElementById("searchInput").addEventListener("input", applyFilters);
+
+  const favToggle = document.getElementById("filterFavorites");
+  favToggle.addEventListener("click", () => {
+    favToggle.classList.toggle("active");
+    showGridList();
+    applyFilters();
+  });
+
+  document.addEventListener("mxFavoritesChanged", applyFilters);
+}
+
+/* ---------------------------------------------------------
+   INIT
+--------------------------------------------------------- */
+loadBooks().then(initEvents);
+
+</script>
 </body>
 </html>
