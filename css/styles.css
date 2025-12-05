@@ -406,20 +406,28 @@ header {
   border: none;
   background: rgba(255, 255, 255, 0.95);
 
+  /* FIXED: Use Flexbox to center SVG perfectly */
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0;
 
   font-size: 1.1rem;
-  color: #ccc; /* Default grey */
+  color: #ccc; /* Default grey (applied to SVG fill) */
 
   cursor: pointer;
   z-index: 50; /* <-- always above overlay */
 
   box-shadow: 0 2px 6px rgba(0,0,0,0.18);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  
-  /* IMPORTANT: Removing color transition here to prevent sticky hover states on iOS */
+  transition: transform 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
+}
+
+/* ADDED: SVG Styling for Heart */
+.heart-btn svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+  pointer-events: none; /* Let clicks pass to the button */
 }
 
 /* ONLY turn red if the active class is explicitly present */
