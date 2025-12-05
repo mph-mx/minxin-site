@@ -520,21 +520,29 @@ body.dark .platform-selector {
   gap: 16px;
 }
 
-/* CHANGED: Make close button sticky so it stays visible during scroll */
+/* FIXED: Changed to ABSOLUTE positioning to prevent mobile overlap issues */
 .book-modal-close {
-  position: sticky;
-  top: 0;
-  align-self: flex-end; /* Keeps it to the right */
+  position: absolute;
+  top: 15px;
+  right: 15px;
   
   border: none;
-  background: transparent; /* or rgba(255,255,255,0.8) for better visibility over text */
+  background: rgba(255,255,255,0.85); /* Semi-transparent bg for visibility */
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
   font-size: 1.8rem;
   line-height: 1;
   cursor: pointer;
   color: #555;
   z-index: 20; 
-  margin-bottom: -40px; /* Pull content up slightly to align with header space */
-  padding: 0 0 10px 10px;
+  padding: 0;
+  /* Removed sticky and negative margins which caused the overlap */
 }
 
 .book-modal-body {
@@ -542,7 +550,7 @@ body.dark .platform-selector {
   grid-template-columns: 140px minmax(0, 1fr);
   gap: 18px;
   align-items: flex-start;
-  margin-top: 10px; /* Space for the sticky close button */
+  margin-top: 25px; /* Add explicit space for the close button */
 }
 
 .book-modal-left {
