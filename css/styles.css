@@ -153,10 +153,11 @@ header {
 }
 
 /* Updated to include filter-group select */
-.genre-filter select, .filter-group select {
+.genre-filter select, .filter-group select, .platform-select {
   padding: 10px;
   border-radius: 8px;
   margin-right: 10px;
+  border: 1px solid #ccc; /* consistent border */
 }
 
 .toggle-group {
@@ -176,6 +177,25 @@ header {
 .toggle-group button.active {
   background: var(--accent-primary);
   color: white;
+}
+
+/* NEW: Shopping Platform Selector Styling */
+.platform-selector {
+  /* VISUAL ORDER: Ensure this stays at the very end visually */
+  order: 100;
+  
+  /* ALIGNMENT: Push this element (and only this one) to the far right */
+  margin-left: auto; 
+  
+  /* Styling for separation */
+  padding-left: 15px; 
+  border-left: 1px solid rgba(0,0,0,0.1); 
+  display: flex;
+  align-items: center;
+}
+
+body.dark .platform-selector {
+  border-left-color: rgba(255,255,255,0.2);
 }
 
 /* -----------------------------------------------------
@@ -218,6 +238,19 @@ header {
     font-size: 0.8rem;
     font-weight: 400;
     opacity: 0.7;
+  }
+  
+  /* On mobile, stack the search block better */
+  .search-block {
+    justify-content: space-between;
+  }
+  .platform-selector {
+    margin-left: 0; /* Reset auto margin on mobile so it flows naturally */
+    border-left: none;
+    padding-left: 0;
+    width: 100%; /* Make it full width or naturally flowing */
+    margin-top: 10px;
+    order: 0; /* Reset order on mobile so it follows natural flow */
   }
 }
 
@@ -515,12 +548,34 @@ header {
 .book-modal-left {
   display: flex;
   justify-content: center;
+  flex-direction: column; /* Stack image and buttons */
+  gap: 10px;
 }
 
 .book-modal-cover {
   width: 100%;
   border-radius: 10px;
   object-fit: cover;
+}
+
+/* NEW: Action button in modal */
+.book-action-btn {
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+  background: var(--accent-primary);
+  color: white;
+  text-align: center;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.book-action-btn:hover {
+  filter: brightness(1.2);
 }
 
 .book-modal-right {
