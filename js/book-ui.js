@@ -4,10 +4,10 @@
 // Shared UI helpers for Minxin Reading Lists:
 // - Book details modal
 // - Favorites (hearts) with localStorage
-// - Blur + fade-in images (FIXED)
+// - Blur + fade-in images
 // - Scroll-to-top button
 // - Netflix row scroll hints
-// - Favorites Export (Restored)
+// - Platform Search (NEW)
 
 (function () {
   const STORAGE_KEY = 'mxReadingFavorites_v1';
@@ -61,7 +61,7 @@
     btn.type = 'button';
     btn.className = 'heart-btn';
     
-    // CHANGED: Use SVG instead of text to prevent iOS Emoji override
+    // SVG for iOS compatibility
     btn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
 
     if (isFavorite(book)) {
@@ -99,6 +99,8 @@
       <div class="book-modal-body">
         <div class="book-modal-left">
           <img class="book-modal-cover" alt="">
+          <!-- Added: Platform search button placeholder -->
+          <a href="#" target="_blank" class="book-action-btn hidden" id="modalSearchBtn">Find Online</a>
         </div>
         <div class="book-modal-right">
           <h2 class="book-modal-title"></h2>
@@ -139,18 +141,48 @@
     return backdrop;
   }
 
+  // NEW: Helper to generate search URLs
+  function getSearchUrl(platform, bookTitle, bookAuthor) {
+    const query = encodeURIComponent(`${bookTitle} ${bookAuthor}`);
+    switch (platform) {
+      case 'dangdang': return `http://search.dangdang.com/?key=${query}`;
+      case 'jd': return `https://search.jd.com/Search?keyword=${query}`;
+      case 'wechat': return `https://weread.qq.com/web/search/global?keyword=${query}`;
+      case 'baidu': return `https://yuedu.baidu.com/search?word=${query}`;
+      case 'amazon': return `https://www.amazon.com/s?k=${query}`;
+      case 'google': return `https://www.google.com/search?tbm=bks&q=${query}`;
+      case 'apple': return `https://www.google.com/search?q=site:books.apple.com+${query}`;
+      default: return `https://www.google.com/search?q=${query}`;
+    }
+  }
+
   function fillModal(book, allBooks) {
     const backdrop = ensureModalElements();
     const modal = backdrop.querySelector('.book-modal');
 
     const cover = modal.querySelector('.book-modal-cover');
-    // Reset blur state for new image
-    cover.classList.remove('loaded');
     cover.src = book.image;
     cover.alt = `${book.title || ''} cover`;
+    cover.classList.remove('loaded');
     
-    // Apply blur logic to modal image
+    // Apply blur logic
     decorateImage(cover);
+
+    // NEW: Logic to update the "Find Online" button
+    const searchBtn = modal.querySelector('#modalSearchBtn');
+    const platformSelector = document.getElementById('platformSelector');
+    
+    // Only show button if a platform is actually selected (value is not empty)
+    if (platformSelector && searchBtn && platformSelector.value !== "") {
+        const platform = platformSelector.value;
+        const platformName = platformSelector.options[platformSelector.selectedIndex].text.split('(')[0].trim();
+        
+        searchBtn.classList.remove('hidden');
+        searchBtn.textContent = `Shop on ${platformName}`;
+        searchBtn.href = getSearchUrl(platform, book.title || '', book.author || '');
+    } else if (searchBtn) {
+        searchBtn.classList.add('hidden');
+    }
 
     modal.querySelector('.book-modal-title').textContent = book.title || '';
     modal.querySelector('.book-modal-author').textContent = book.author || '';
@@ -202,9 +234,7 @@
           <img src="${sim.image}" alt="${sim.title || ''} cover" loading="lazy">
           <span>${sim.title || ''}</span>
         `;
-        // Also blur/unblur small thumbnails
         decorateImage(btn.querySelector('img'));
-        
         btn.addEventListener('click', () => openModal(sim, allBooks));
         moreRow.appendChild(btn);
       });
@@ -222,28 +252,22 @@
     document.body.classList.add('modal-open');
   }
 
-  /* ------------ Card decoration (Blur Logic) ------------ */
-  // FIXED: New robust logic to prevent "always blurred" images
+  /* ------------ Card decoration ------------ */
+
   function decorateImage(img) {
     if (!img) return;
     
-    // Function to force un-blur
     const markLoaded = () => {
         img.classList.add('loaded');
     };
 
-    // 1. Check if it's already done (cached or loaded fast)
     if (img.complete && img.naturalWidth > 0) {
       markLoaded();
     } else {
-      // 2. Wait for load event
       img.addEventListener('load', markLoaded, { once: true });
-      // 3. Unblur on error too (so we don't see a blurred broken icon)
       img.addEventListener('error', markLoaded, { once: true });
     }
 
-    // 4. FAILSAFE: If for any reason the event doesn't fire (browser quirk),
-    // force it to unblur after 1.5 seconds.
     setTimeout(markLoaded, 1500);
   }
 
@@ -315,7 +339,6 @@
     const toggle = document.getElementById('darkModeToggle');
     if (!toggle) return;
 
-    // Load persisted mode
     const saved = localStorage.getItem('mx_darkmode');
     if (saved === '1') {
       document.body.classList.add('dark');
@@ -370,7 +393,6 @@
             text += `   Genres: ${book.genres.join(', ')}\n`;
             }
             if (book.description) {
-                // Truncate really long descriptions for the text file
                 const shortDesc = book.description.length > 200 
                     ? book.description.substring(0, 200) + '...' 
                     : book.description;
