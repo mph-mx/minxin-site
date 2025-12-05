@@ -1,3 +1,5 @@
+/* [file name]: styles.css */
+/* [file content begin] */
 /* -----------------------------------------------------
    GLOBAL VARIABLES
 ----------------------------------------------------- */
@@ -59,6 +61,53 @@ body::before {
   z-index: -1;
 }
 
+/* Dark mode theme */
+body.dark {
+  --accent-primary: #ffffff;
+  --accent-pill-bg: #333;
+  --accent-pill-text: #eee;
+  --background-opacity: 0.15;
+}
+
+body.dark {
+  background-color: #0f0f0f;
+  color: #f2f2f2;
+}
+
+body.dark .book-card,
+body.dark .book-card-list,
+body.dark .intro-section {
+  background: #1a1a1a;
+  color: #f0f0f0;
+}
+
+body.dark .toggle-group button {
+  background: #444;
+  color: #eee;
+}
+
+body.dark .toggle-group button.active {
+  background: #888;
+}
+
+body.dark .fav-toggle {
+  background: #444;
+  color: #eee;
+}
+
+body.dark .fav-toggle.active {
+  background: #d32f2f;
+}
+
+body.dark .book-overlay {
+  background: rgba(255,255,255,0.12);
+}
+
+body.dark .scroll-top-btn {
+  background: #555;
+}
+
+
 /* -----------------------------------------------------
    HEADER
 ----------------------------------------------------- */
@@ -74,7 +123,7 @@ header {
 }
 
 .header-logo {
-  width: 102px;
+  width: 52px;
   height: auto;
 }
 
@@ -156,6 +205,48 @@ header {
 .genre-scroll.dragging {
   cursor: grabbing;
 }
+
+/* Extra spacing for rows */
+.genre-row {
+  margin-bottom: 32px;
+}
+
+/* Swipe hint (mobile) */
+@media (max-width: 768px) {
+  .genre-row-header h2::after {
+    content: " · Swipe to explore →";
+    font-size: 0.8rem;
+    font-weight: 400;
+    opacity: 0.7;
+  }
+}
+
+/* Edge fade for scrollable rows */
+.genre-scroll.scroll-fade {
+  position: relative;
+}
+
+.genre-scroll.scroll-fade::before,
+.genre-scroll.scroll-fade::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 28px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.genre-scroll.scroll-fade::before {
+  left: 0;
+  background: linear-gradient(to right, #ffffff, rgba(255, 255, 255, 0));
+}
+
+.genre-scroll.scroll-fade::after {
+  right: 0;
+  background: linear-gradient(to left, #ffffff, rgba(255, 255, 255, 0));
+}
+
 
 /* -----------------------------------------------------
    BOOK CARDS
@@ -251,6 +342,376 @@ header {
 .book-card-list img {
   width: 120px;
   height: 160px;
+}
+
+/* Card base + better spacing */
+.book-card,
+.book-card-list {
+  position: relative;
+}
+
+.book-title {
+  margin: 0 0 4px;
+}
+
+.book-author {
+  font-size: 0.9rem;
+  opacity: 0.85;
+  margin-bottom: 4px;
+}
+
+.book-meta {
+  font-size: 0.8rem;
+  opacity: 0.75;
+  margin-bottom: 6px;
+}
+
+.book-description {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-top: 4px;
+}
+
+/* FIXED: Blur + fade-in on book images */
+.book-card img,
+.book-card-list img,
+.book-modal-cover {
+  /* Start visible but blurred */
+  opacity: 1;
+  filter: blur(8px);
+  transform: scale(1.02);
+  transition: opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease;
+}
+
+/* When loaded class is added */
+.book-card img.loaded,
+.book-card-list img.loaded,
+.book-modal-cover.loaded {
+  opacity: 1;
+  filter: blur(0);
+  transform: scale(1);
+}
+
+/* Favorites heart */
+/* Heart button — fixed top-right, above overlay */
+.heart-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+
+  width: 30px;
+  height: 30px;
+
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.95);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 1.1rem;
+  color: #ccc;
+
+  cursor: pointer;
+  z-index: 50; /* <-- always above overlay */
+
+  box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
+}
+
+.heart-btn.active {
+  color: #e74c3c;
+}
+
+/* Heart pop animation */
+@keyframes heart-pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.35); }
+  60%  { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
+
+.heart-btn.pop {
+  animation: heart-pop 0.25s ease;
+}
+
+
+/* Hover polish */
+.book-card:hover .heart-btn,
+.book-card-list:hover .heart-btn {
+  transform: translateY(-1px);
+}
+
+
+.heart-btn.active {
+  color: #e74c3c;
+}
+
+/* A bit more visibility on hover */
+.book-card:hover .heart-btn,
+.book-card-list:hover .heart-btn {
+  transform: translateY(-1px);
+}
+
+
+.book-card:hover .heart-btn,
+.book-card-list:hover .heart-btn {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+}
+
+.heart-btn.active {
+  color: #e74c3c;
+}
+
+/* Book details modal */
+.book-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.book-modal-backdrop.hidden {
+  display: none;
+}
+
+.book-modal {
+  max-width: 820px;
+  width: 95%;
+  max-height: 85vh;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 24px 24px 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.book-modal-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  border: none;
+  background: transparent;
+  font-size: 1.8rem;
+  line-height: 1;
+  cursor: pointer;
+  color: #555;
+}
+
+.book-modal-body {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr);
+  gap: 18px;
+  align-items: flex-start;
+}
+
+.book-modal-left {
+  display: flex;
+  justify-content: center;
+}
+
+.book-modal-cover {
+  width: 100%;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.book-modal-right {
+  min-width: 0;
+}
+
+.book-modal-title {
+  margin: 0 0 4px;
+  font-size: 1.4rem;
+}
+
+.book-modal-author {
+  font-size: 0.95rem;
+  opacity: 0.85;
+  margin-bottom: 4px;
+}
+
+.book-modal-meta {
+  font-size: 0.85rem;
+  opacity: 0.75;
+  margin-bottom: 8px;
+}
+
+.book-modal-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.book-modal-description {
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.book-modal-more {
+  margin-top: 6px;
+}
+
+.book-modal-more h3 {
+  font-size: 0.95rem;
+  margin: 0 0 6px;
+}
+
+.book-modal-more-row {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.more-like-card {
+  border: none;
+  background: #f5f5f5;
+  border-radius: 10px;
+  padding: 6px 6px 8px;
+  min-width: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  cursor: pointer;
+}
+
+.more-like-card img {
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 4px;
+}
+
+.more-like-card span {
+  font-size: 0.8rem;
+  text-align: left;
+}
+
+/* prevent background scroll when modal open */
+body.modal-open {
+  overflow: hidden;
+}
+
+@media (max-width: 640px) {
+  .book-modal {
+    padding: 18px 16px 16px;
+  }
+
+  .book-modal-body {
+    grid-template-columns: 1fr;
+  }
+
+  .book-modal-left {
+    max-width: 150px;
+    margin: 0 auto;
+  }
+}
+
+/* Scroll-to-top floating button */
+.scroll-top-btn {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: var(--accent-primary, #4a90e2);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.28);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 900;
+}
+
+.scroll-top-btn.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* Favorites filter toggle */
+/* Favorites button styled like toggle buttons */
+.fav-toggle {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #bbb;
+  background: #f7f7f7;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: #333;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Active state = matches accent style */
+.fav-toggle.active {
+  background: var(--accent-primary);
+  color: #fff;
+  border-color: var(--accent-primary);
+}
+
+
+/* Favorites empty state */
+.favorites-empty {
+  padding: 40px;
+  font-size: 1.1rem;
+  opacity: 0.75;
+  text-align: center;
+}
+
+/* -----------------------------------------------------
+   EXPORT BUTTON
+----------------------------------------------------- */
+#exportFavoritesBtn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #4CAF50;
+  background: #f0f9f0;
+  color: #2E7D32;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+#exportFavoritesBtn:hover {
+  background: #4CAF50;
+  color: white;
+  transform: translateY(-1px);
+}
+
+#exportFavoritesBtn.exporting {
+  background: #4CAF50;
+  color: white;
+  border-color: #2E7D32;
+}
+
+body.dark #exportFavoritesBtn {
+  background: #1a3d1a;
+  border-color: #4CAF50;
+  color: #a5d6a7;
+}
+
+body.dark #exportFavoritesBtn:hover {
+  background: #4CAF50;
+  color: #0f0f0f;
 }
 
 /* -----------------------------------------------------
@@ -412,6 +873,8 @@ header {
   margin: 0;
 }
 
+
+
 /* Color coding the top borders of level cards */
 .level-card[data-level="Explorer"] { border-top: 4px solid #4CAF50; }
 .level-card[data-level="Adventurer"] { border-top: 4px solid #FFC107; }
@@ -424,3 +887,4 @@ header {
 .hidden {
   display: none !important;
 }
+[file content end]
