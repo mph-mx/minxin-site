@@ -392,8 +392,7 @@ header {
   transform: scale(1);
 }
 
-/* Favorites heart */
-/* Heart button — fixed top-right, above overlay */
+/* Favorites heart (UPDATED with SVG and Flexbox) */
 .heart-btn {
   position: absolute;
   top: 6px;
@@ -406,7 +405,7 @@ header {
   border: none;
   background: rgba(255, 255, 255, 0.95);
 
-  /* FIXED: Use Flexbox to center SVG perfectly */
+  /* Center SVG perfectly */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -416,21 +415,21 @@ header {
   color: #ccc; /* Default grey (applied to SVG fill) */
 
   cursor: pointer;
-  z-index: 50; /* <-- always above overlay */
+  z-index: 50; /* always above overlay */
 
   box-shadow: 0 2px 6px rgba(0,0,0,0.18);
   transition: transform 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
 }
 
-/* ADDED: SVG Styling for Heart */
+/* SVG Styling */
 .heart-btn svg {
   width: 20px;
   height: 20px;
   display: block;
-  pointer-events: none; /* Let clicks pass to the button */
+  pointer-events: none;
 }
 
-/* ONLY turn red if the active class is explicitly present */
+/* ONLY turn red if active class is present */
 .heart-btn.active {
   color: #e74c3c !important;
 }
@@ -447,14 +446,14 @@ header {
   animation: heart-pop 0.25s ease;
 }
 
-/* Hover polish - Movement only, no color change on hover to avoid confusion */
+/* Hover polish */
 .book-card:hover .heart-btn,
 .book-card-list:hover .heart-btn {
   transform: translateY(-1px);
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
 }
 
-/* Book details modal */
+/* Book details modal (SCROLL FIX APPLIED HERE) */
 .book-modal-backdrop {
   position: fixed;
   inset: 0;
@@ -478,22 +477,31 @@ header {
   padding: 24px 24px 20px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
   position: relative;
-  overflow: hidden;
+  
+  /* CHANGED: Allow vertical scrolling */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* Smooth scroll on iOS */
+  
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
+/* CHANGED: Make close button sticky so it stays visible during scroll */
 .book-modal-close {
-  position: absolute;
-  top: 10px;
-  right: 12px;
+  position: sticky;
+  top: 0;
+  align-self: flex-end; /* Keeps it to the right */
+  
   border: none;
-  background: transparent;
+  background: transparent; /* or rgba(255,255,255,0.8) for better visibility over text */
   font-size: 1.8rem;
   line-height: 1;
   cursor: pointer;
   color: #555;
+  z-index: 20; 
+  margin-bottom: -40px; /* Pull content up slightly to align with header space */
+  padding: 0 0 10px 10px;
 }
 
 .book-modal-body {
@@ -501,6 +509,7 @@ header {
   grid-template-columns: 140px minmax(0, 1fr);
   gap: 18px;
   align-items: flex-start;
+  margin-top: 10px; /* Space for the sticky close button */
 }
 
 .book-modal-left {
@@ -521,6 +530,7 @@ header {
 .book-modal-title {
   margin: 0 0 4px;
   font-size: 1.4rem;
+  padding-right: 30px; /* Avoid overlap with close button if it wasn't sticky */
 }
 
 .book-modal-author {
