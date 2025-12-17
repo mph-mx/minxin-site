@@ -1,21 +1,971 @@
-body {font-family: Arial, sans-serif; margin: 0; padding:0; background-color:#f5f5f5; color:#333;}
-header {background-color:#004d7a;color:#fff;padding:20px;text-align:center;}
-nav {background-color:#e1e1e1;padding:10px;display:flex;gap:15px;justify-content:center;flex-wrap:wrap;}
-nav a {color:#004d7a;text-decoration:none;font-weight:bold;}
-.container {max-width:1000px;margin:20px auto;padding:0 20px;}
-.book-card {display:flex; background-color:#fff;border-radius:8px;margin-bottom:15px;overflow:hidden;box-shadow:0 2px 5px rgba(0,0,0,0.1);} 
-.book-card img {width:100px;height:auto;object-fit:cover;margin-right:15px;}
-.book-info {padding:10px;}
-.book-info h3 {margin-top:0;margin-bottom:5px;}
-.book-info p {margin:4px 0;}
-.filters {margin:10px 0;display:flex; gap:10px;flex-wrap:wrap;}
-.filters select {padding:5px;border-radius:4px;border:1px solid #ccc;}
-footer {background-color:#004d7a;color:#fff;text-align:center;padding:10px;margin-top:40px;}
-.genres-list {display:flex; flex-wrap:wrap; gap:10px; margin-bottom:10px;}
-.genres-list a {background-color:#004d7a;color:#fff;padding:5px 10px;border-radius:15px;text-decoration:none;font-size:14px;}
-.genres-list a:hover {background-color:#00345d;}
-.lexile-list {display:flex; flex-direction:column; gap:10px; margin-top:10px;}
-.lexile-list a {background-color:#d1e8ff;color:#004d7a;padding:5px 10px;border-radius:15px;text-decoration:none;font-size:14px;}
-.lexile-list a:hover {background-color:#a8d3ff;}
-li {margin-bottom:10px; list-style:none;}
-.top-search-button {display: inline-block;padding: 0.6rem 1.4rem;border-radius: 999px;font-size: 20px; font-weight: 600; color: #ffffff;text-decoration: none;}
+/* [file name]: styles.css */
+/* [file content begin] */
+/* -----------------------------------------------------
+   GLOBAL VARIABLES
+----------------------------------------------------- */
+:root {
+  --accent-primary: #003366;
+  --accent-pill-bg: #eaf2ff;
+  --accent-pill-text: #0b3d91;
+  --background-blur: 6px;
+  --background-opacity: 0.32;
+}
+
+/* PD THEME (light blue) */
+body.pd {
+  --accent-primary: #0067c0;
+  --accent-pill-bg: #e7f2ff;
+  --accent-pill-text: #004a87;
+  --background-image: url('../images/background_pd.jpg');
+}
+
+/* SD (English) THEME (dark navy) */
+body.sd {
+  --accent-primary: #1d3557;
+  --accent-pill-bg: #f0f4ff;
+  --accent-pill-text: #1d3557;
+  --background-image: url('../images/background_sd.jpg');
+}
+
+/* SD Chinese THEME (elegant red) */
+body.sd-cn {
+  --accent-primary: #b30000;
+  --accent-pill-bg: #ffeceb;
+  --accent-pill-text: #b30000;
+  --background-image: url('../images/background_sd.jpg');
+}
+
+/* -----------------------------------------------------
+   GLOBAL LAYOUT
+----------------------------------------------------- */
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: var(--accent-primary);
+  color: #222;
+  background-image: var(--background-image);
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center;
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  backdrop-filter: blur(var(--background-blur));
+  background: rgba(255,255,255,var(--background-opacity));
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Dark mode theme */
+body.dark {
+  --accent-primary: #ffffff;
+  --accent-pill-bg: #333;
+  --accent-pill-text: #eee;
+  --background-opacity: 0.15;
+}
+
+body.dark {
+  background-color: #0f0f0f;
+  color: #f2f2f2;
+}
+
+body.dark .book-card,
+body.dark .book-card-list,
+body.dark .intro-section {
+  background: #1a1a1a;
+  color: #f0f0f0;
+}
+
+body.dark .toggle-group button {
+  background: #444;
+  color: #eee;
+}
+
+body.dark .toggle-group button.active {
+  background: #888;
+}
+
+body.dark .fav-toggle {
+  background: #444;
+  color: #eee;
+}
+
+body.dark .fav-toggle.active {
+  background: #d32f2f;
+}
+
+body.dark .book-overlay {
+  background: rgba(255,255,255,0.12);
+}
+
+body.dark .scroll-top-btn {
+  background: #555;
+}
+
+
+/* -----------------------------------------------------
+   HEADER
+----------------------------------------------------- */
+
+header {
+  padding: 20px;
+}
+
+.title-block {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.header-logo {
+  width: 52px;
+  height: auto;
+}
+
+.back-link {
+  text-decoration: none;
+  margin-right: 8px;
+  color: var(--accent-primary);
+}
+
+/* -----------------------------------------------------
+   SEARCH BAR + TOGGLES
+----------------------------------------------------- */
+
+.search-block {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.search-block input[type="search"] {
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  min-width: 260px;
+}
+
+/* Updated to include filter-group select */
+.genre-filter select, .filter-group select, .platform-select {
+  padding: 10px;
+  border-radius: 8px;
+  margin-right: 10px;
+  border: 1px solid #ccc; /* consistent border */
+}
+
+.toggle-group {
+  display: inline-flex;
+  border: 1px solid #bbb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.toggle-group button {
+  padding: 8px 12px;
+  background: #f7f7f7;
+  border: none;
+  cursor: pointer;
+}
+
+.toggle-group button.active {
+  background: var(--accent-primary);
+  color: white;
+}
+
+/* NEW: Shopping Platform Selector Styling */
+.platform-selector {
+  /* VISUAL ORDER: Ensure this stays at the very end visually */
+  order: 100;
+  
+  /* ALIGNMENT: Push this element (and only this one) to the far right */
+  margin-left: auto; 
+  
+  /* Styling for separation */
+  padding-left: 15px; 
+  border-left: 1px solid rgba(0,0,0,0.1); 
+  display: flex;
+  align-items: center;
+}
+
+body.dark .platform-selector {
+  border-left-color: rgba(255,255,255,0.2);
+}
+
+/* -----------------------------------------------------
+   NETFLIX STYLE ROWS
+----------------------------------------------------- */
+
+.genre-row {
+  margin-bottom: 28px;
+}
+
+.genre-row-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px 6px;
+}
+
+.genre-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 0 20px 20px; 
+  scroll-behavior: smooth;
+  /* Enhanced scrolling for iOS/Touch */
+  -webkit-overflow-scrolling: touch;
+}
+
+.genre-scroll.dragging {
+  cursor: grabbing;
+}
+
+/* Extra spacing for rows */
+.genre-row {
+  margin-bottom: 32px;
+}
+
+/* Swipe hint (mobile) */
+@media (max-width: 768px) {
+  .genre-row-header h2::after {
+    content: " · Swipe to explore →";
+    font-size: 0.8rem;
+    font-weight: 400;
+    opacity: 0.7;
+  }
+  
+  /* On mobile, stack the search block better */
+  .search-block {
+    justify-content: space-between;
+  }
+  .platform-selector {
+    margin-left: 0; /* Reset auto margin on mobile so it flows naturally */
+    border-left: none;
+    padding-left: 0;
+    width: 100%; /* Make it full width or naturally flowing */
+    margin-top: 10px;
+    order: 0; /* Reset order on mobile so it follows natural flow */
+  }
+}
+
+/* Edge fade for scrollable rows */
+.genre-scroll.scroll-fade {
+  position: relative;
+}
+
+.genre-scroll.scroll-fade::before,
+.genre-scroll.scroll-fade::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 28px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.genre-scroll.scroll-fade::before {
+  left: 0;
+  background: linear-gradient(to right, #ffffff, rgba(255, 255, 255, 0));
+}
+
+.genre-scroll.scroll-fade::after {
+  right: 0;
+  background: linear-gradient(to left, #ffffff, rgba(255, 255, 255, 0));
+}
+
+
+/* -----------------------------------------------------
+   BOOK CARDS
+----------------------------------------------------- */
+
+.book-card,
+.book-card-list {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  width: 160px;
+  flex-shrink: 0;
+  position: relative; 
+  /* Cursor pointer indicates interactivity (tap/click) */
+  cursor: pointer;
+
+}
+
+/* MODERN HOVER OVERLAY */
+/* Disable hover overlays entirely */
+.book-overlay {
+  display: none !important;
+}
+
+
+/* Hover trigger AND Active trigger (for Touch) */
+.book-card:hover .book-overlay,
+.book-card.active .book-overlay {
+  opacity: 0.98;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.book-card img {
+  width: 100%;
+  height: 230px;
+  object-fit: cover;
+
+  
+}
+
+.book-body {
+  padding: 10px;
+}
+
+.book-title {
+  font-size: 0.9rem;
+  margin: 0 0 4px;
+}
+
+.book-author {
+  color: #666;
+  font-size: 0.8rem;
+}
+
+.book-meta {
+  font-size: 0.75rem;
+  color: #444;
+  margin-top: 4px;
+}
+
+/* List cards */
+.book-card-list {
+  display: flex;
+  gap: 12px;
+  padding: 10px;
+  width: 100%;
+}
+
+.book-card-list img {
+  width: 120px;
+  height: 160px;
+}
+
+/* Card base + better spacing */
+.book-card,
+.book-card-list {
+  position: relative;
+}
+
+.book-title {
+  margin: 0 0 4px;
+}
+
+.book-author {
+  font-size: 0.9rem;
+  opacity: 0.85;
+  margin-bottom: 4px;
+}
+
+.book-meta {
+  font-size: 0.8rem;
+  opacity: 0.75;
+  margin-bottom: 6px;
+}
+
+.book-description {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-top: 4px;
+}
+
+/* FIXED: Blur + fade-in on book images */
+.book-card img,
+.book-card-list img,
+.book-modal-cover {
+  /* Start visible but blurred */
+  opacity: 1;
+  filter: blur(8px);
+  transform: scale(1.02);
+  transition: opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease;
+}
+
+/* When loaded class is added */
+.book-card img.loaded,
+.book-card-list img.loaded,
+.book-modal-cover.loaded {
+  opacity: 1;
+  filter: blur(0);
+  transform: scale(1);
+}
+
+/* Favorites heart (UPDATED with SVG and Flexbox) */
+.heart-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+
+  width: 30px;
+  height: 30px;
+
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.95);
+
+  /* Center SVG perfectly */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+
+  font-size: 1.1rem;
+  color: #ccc; /* Default grey (applied to SVG fill) */
+
+  cursor: pointer;
+  z-index: 50; /* always above overlay */
+
+  box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
+}
+
+/* SVG Styling */
+.heart-btn svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+  pointer-events: none;
+}
+
+/* ONLY turn red if active class is present */
+.heart-btn.active {
+  color: #e74c3c !important;
+}
+
+/* Heart pop animation */
+@keyframes heart-pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.35); }
+  60%  { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
+
+.heart-btn.pop {
+  animation: heart-pop 0.25s ease;
+}
+
+/* Minxin Library badge */
+.minxin-badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  padding: 3px 7px;
+  font-size: 0.65rem;
+  z-index: 5;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 4px 8px;
+  border-radius: 999px;
+
+  font-size: 0.7rem;
+  font-weight: 600;
+
+  background: var(--accent-pill-bg);
+  color: var(--accent-pill-text);
+
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  border: 1px solid #c62828; /* Minxin red */
+}
+
+.minxin-badge span {
+  line-height: 1;
+}
+
+
+/* Hover polish */
+.book-card:hover .heart-btn,
+.book-card-list:hover .heart-btn {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+}
+
+/* Book details modal (SCROLL FIX APPLIED HERE) */
+.book-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.book-modal-backdrop.hidden {
+  display: none;
+}
+
+.book-modal {
+  max-width: 820px;
+  width: 95%;
+  max-height: 85vh;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 24px 24px 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+  position: relative;
+  
+  /* CHANGED: Allow vertical scrolling */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* Smooth scroll on iOS */
+  
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.book-modal-library {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0,0,0,0.1);
+
+  font-size: 0.9rem;
+  font-weight: 500;
+
+  color: var(--accent-primary);
+}
+
+
+/* FIXED: Changed to ABSOLUTE positioning to prevent mobile overlap issues */
+.book-modal-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  
+  border: none;
+  background: rgba(255,255,255,0.85); /* Semi-transparent bg for visibility */
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  font-size: 1.8rem;
+  line-height: 1;
+  cursor: pointer;
+  color: #555;
+  z-index: 20; 
+  padding: 0;
+  /* Removed sticky and negative margins which caused the overlap */
+}
+
+.book-modal-body {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr);
+  gap: 18px;
+  align-items: flex-start;
+  margin-top: 25px; /* Add explicit space for the close button */
+}
+
+.book-modal-left {
+  display: flex;
+  justify-content: center;
+  flex-direction: column; /* Stack image and buttons */
+  gap: 10px;
+}
+
+.book-modal-cover {
+  width: 100%;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+/* NEW: Action button in modal */
+.book-action-btn {
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+  background: var(--accent-primary);
+  color: white;
+  text-align: center;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.book-action-btn:hover {
+  filter: brightness(1.2);
+}
+
+.book-modal-right {
+  min-width: 0;
+}
+
+.book-modal-title {
+  margin: 0 0 4px;
+  font-size: 1.4rem;
+  padding-right: 30px; /* Avoid overlap with close button if it wasn't sticky */
+}
+
+.book-modal-author {
+  font-size: 0.95rem;
+  opacity: 0.85;
+  margin-bottom: 4px;
+}
+
+.book-modal-meta {
+  font-size: 0.85rem;
+  opacity: 0.75;
+  margin-bottom: 8px;
+}
+
+.book-modal-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.book-modal-description {
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.book-modal-more {
+  margin-top: 6px;
+}
+
+.book-modal-more h3 {
+  font-size: 0.95rem;
+  margin: 0 0 6px;
+}
+
+.book-modal-more-row {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.more-like-card {
+  border: none;
+  background: #f5f5f5;
+  border-radius: 10px;
+  padding: 6px 6px 8px;
+  min-width: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  cursor: pointer;
+}
+
+.more-like-card img {
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 4px;
+}
+
+.more-like-card span {
+  font-size: 0.8rem;
+  text-align: left;
+}
+
+/* prevent background scroll when modal open */
+body.modal-open {
+  overflow: hidden;
+}
+
+@media (max-width: 640px) {
+  .book-modal {
+    padding: 18px 16px 16px;
+  }
+
+  .book-modal-body {
+    grid-template-columns: 1fr;
+  }
+
+  .book-modal-left {
+    max-width: 150px;
+    margin: 0 auto;
+  }
+}
+
+/* Scroll-to-top floating button */
+.scroll-top-btn {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: var(--accent-primary, #4a90e2);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.28);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 900;
+}
+
+.scroll-top-btn.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* Favorites filter toggle */
+/* Favorites button styled like toggle buttons */
+.fav-toggle {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #bbb;
+  background: #f7f7f7;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: #333;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Active state = matches accent style */
+.fav-toggle.active {
+  background: var(--accent-primary);
+  color: #fff;
+  border-color: var(--accent-primary);
+}
+
+
+/* Favorites empty state */
+.favorites-empty {
+  padding: 40px;
+  font-size: 1.1rem;
+  opacity: 0.75;
+  text-align: center;
+}
+
+/* -----------------------------------------------------
+   EXPORT BUTTON
+----------------------------------------------------- */
+#exportFavoritesBtn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #4CAF50;
+  background: #f0f9f0;
+  color: #2E7D32;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+#exportFavoritesBtn:hover {
+  background: #4CAF50;
+  color: white;
+  transform: translateY(-1px);
+}
+
+#exportFavoritesBtn.exporting {
+  background: #4CAF50;
+  color: white;
+  border-color: #2E7D32;
+}
+
+body.dark #exportFavoritesBtn {
+  background: #1a3d1a;
+  border-color: #4CAF50;
+  color: #a5d6a7;
+}
+
+body.dark #exportFavoritesBtn:hover {
+  background: #4CAF50;
+  color: #0f0f0f;
+}
+
+/* -----------------------------------------------------
+   PILLS
+----------------------------------------------------- */
+
+/* Genre pills */
+.pill-genre {
+  background: var(--accent-pill-bg);
+  color: var(--accent-pill-text);
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 0.68rem;
+  margin: 2px;
+  display: inline-block;
+}
+
+/* Reading level pills (Explorer/Adventurer…) */
+.pill-level {
+  background: #fff4d9;
+  border: 1px solid #e4c995;
+  color: #946600;
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  margin: 2px;
+  display: inline-block;
+}
+/* Age / grade band pills (PD) */
+.pill-age {
+  background: #ffe5c2;
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 0.68rem;
+  margin: 2px;
+  display: inline-block;
+  color: #9a4a00;
+  font-weight: 600;
+}
+
+
+/* -----------------------------------------------------
+   GRID / LIST
+----------------------------------------------------- */
+
+/* UPDATED: Add padding to the container section for All Books view */
+#gridListSection {
+  padding: 0 20px 40px;
+}
+
+#gridListContainer.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 14px;
+  margin-top: 16px;
+}
+
+#gridListContainer.list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+/* -----------------------------------------------------
+   EMPTY STATE
+----------------------------------------------------- */
+
+.no-results {
+  padding: 40px;
+  text-align: center;
+  font-size: 1.1rem;
+  opacity: 0.7;
+}
+
+/* -----------------------------------------------------
+   COMING SOON BANNER
+----------------------------------------------------- */
+
+.coming-soon-banner {
+  background: #fff4f4;
+  border: 1px solid #e5a7a7;
+  padding: 14px 18px;
+  border-radius: 12px;
+  color: #b30000;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+}
+
+/* -----------------------------------------------------
+   INTRO / READING LEVEL SECTION (New)
+----------------------------------------------------- */
+
+.intro-section {
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  margin: 0 20px 30px 20px; /* Aligned with rows */
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.intro-content {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.intro-content h2 {
+  color: var(--accent-primary);
+  margin-top: 0;
+}
+
+.intro-content p {
+  line-height: 1.6;
+  color: #555;
+}
+
+.level-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.level-card {
+  background: #f9fbfd;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #e1e8ed;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.level-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  background: white;
+  border-color: var(--accent-primary);
+}
+
+.level-card h3 {
+  margin-top: 0;
+  color: var(--accent-primary);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.level-card p {
+  font-size: 0.9rem;
+  color: #666;
+  line-height: 1.5;
+  margin: 0;
+}
+
+
+
+/* Color coding the top borders of level cards */
+.level-card[data-level="Explorer"] { border-top: 4px solid #4CAF50; }
+.level-card[data-level="Adventurer"] { border-top: 4px solid #FFC107; }
+.level-card[data-level="Voyager"] { border-top: 4px solid #FF9800; }
+.level-card[data-level="Galactic"] { border-top: 4px solid #F44336; }
+
+/* -----------------------------------------------------
+   UTILITIES
+----------------------------------------------------- */
+.hidden {
+  display: none !important;
+}
