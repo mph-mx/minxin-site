@@ -81,6 +81,7 @@
 
     return btn;
   }
+  
 
   /* ------------ Modal ------------ */
 
@@ -208,6 +209,16 @@
 
     modal.querySelector('.book-modal-description').textContent =
       book.description || 'No description available yet.';
+  const desc = modal.querySelector('.book-modal-description');
+  desc.textContent = book.description || '';
+
+  /* Minxin Library location */
+  if (book.minxin_library && book.minxin_location_en) {
+    const location = document.createElement('div');
+    location.className = 'book-modal-library';
+    location.innerHTML = `📚 ${book.minxin_location_en}`;
+    desc.appendChild(location);
+  }
 
     const moreSection = modal.querySelector('.book-modal-more');
     const moreRow = modal.querySelector('.book-modal-more-row');
@@ -261,31 +272,49 @@
         img.classList.add('loaded');
     };
 
-    if (img.complete && img.naturalWidth > 0) {
-      markLoaded();
-    } else {
-      img.addEventListener('load', markLoaded, { once: true });
-      img.addEventListener('error', markLoaded, { once: true });
-    }
+	// Always remove blur after a short delay
+	requestAnimationFrame(() => {
+	  img.classList.add('loaded');
+	});
 
-    setTimeout(markLoaded, 1500);
+	// Also listen for load if it does fire
+	img.addEventListener('load', () => {
+	  img.classList.add('loaded');
+	}, { once: true });
+
   }
 
-  function attachCard(cardEl, book, allBooks) {
-    if (!cardEl || !book) return;
+	function createMinxinBadge(book) {
+	  if (!book || !book.minxin_library) return null;
 
-    cardEl.dataset.bookKey = bookKey(book);
+	  const badge = document.createElement('div');
+	  badge.className = 'minxin-badge';
+	  badge.innerHTML = `
+		<span>📚</span>
+		<span>Minxin</span>
+	  `;
+	  return badge;
+	}
 
-    cardEl.addEventListener('click', () => {
-      openModal(book, allBooks || []);
-    });
 
-    const heart = createHeartButton(book);
-    cardEl.appendChild(heart);
+	function attachCard(cardEl, book, allBooks) {
+	  if (!cardEl || !book) return;
 
-    const img = cardEl.querySelector('img');
-    decorateImage(img);
-  }
+	  cardEl.dataset.bookKey = bookKey(book);
+
+	  cardEl.addEventListener('click', () => {
+		openModal(book, allBooks || []);
+	  });
+
+	  const badge = createMinxinBadge(book);
+	  if (badge) cardEl.appendChild(badge);
+
+	  const heart = createHeartButton(book);
+	  cardEl.appendChild(heart);
+
+	  const img = cardEl.querySelector('img');
+	  decorateImage(img);
+	}
 
   /* ------------ Scroll-to-top + Netflix hints ------------ */
 
