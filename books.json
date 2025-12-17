@@ -300,6 +300,9 @@
     "title": "Bridge to Terabithia",
     "author": "Katherine Paterson",
     "description": "Jess creates the world of Terabithia to escape from his annoying family. Reached only by a rope swing, he and his friend Leslie live out their adventures until an earth-shattering tragedy strikes.",
+    "minxin_library": true,
+    "minxin_location_zh": "小学-4F廊-E區-3層-5格",
+    "minxin_location_en": "Primary – 4F Corridor – Zone E – Level 3 – Slot 5",
     "genres": [
       "School, Family & Growing Up"
     ],
@@ -384,6 +387,9 @@
     "title": "Catch-22",
     "author": "Joseph Heller",
     "description": "At the end of WW2, Yossarian thinks his life is in danger – not from the enemy, but from his own side. He tries to find any excuse to avoid an increasing number of dangerous missions.",
+    "minxin_library": true,
+    "minxin_location_zh": "中学-5F廊-B區-2層-8格",
+    "minxin_location_en": "Secondary – 5F Corridor – Zone B – Level 2 – Slot 8",
     "genres": [
       "Classics & Canon"
     ],
@@ -502,6 +508,9 @@
     "title": "David Copperfield",
     "author": "Charles Dickens",
     "description": "Perhaps Dickens’ greatest novel features unforgettable characters as seen through the eyes of the ever-suffering David Copperfield.",
+    "minxin_library": true,
+    "minxin_location_zh": "中学-5F廊-B區-3層-3格",
+    "minxin_location_en": "Secondary – 5F Corridor – Zone B – Level 3 – Slot 3",
     "genres": [
       "Classics & Canon"
     ],
@@ -534,6 +543,9 @@
     "title": "Don Quixote",
     "author": "Miguel Cervantes",
     "description": "Don Quixote is a Spanish man sent slightly mad in his quest to live the life of a noble knight. Can his more level-headed aide, Sancho Panza, help save him from himself?",
+    "minxin_library": true,
+    "minxin_location_zh": "中学-5F廊-B區-1層-3格",
+    "minxin_location_en": "Secondary – 5F Corridor – Zone B – Level 1 – Slot 3",
     "genres": [
       "Classics & Canon"
     ],
@@ -550,6 +562,9 @@
     "title": "Dracula",
     "author": "Bram Stoker",
     "description": "A classic vampire tale following Dracula’s move from Transylvania to England, pursued by Abraham Van Helsing who is intent on exterminating him. Warning: this book may inspire your teen to wear black and visit Whitby. Ideal for discussion in Year 9.",
+    "minxin_library": true,
+    "minxin_location_zh": "中学-5F廊-B區-2層-19格",
+    "minxin_location_en": "Secondary – 5F Corridor – Zone B – Level 2 – Slot 19",
     "genres": [
       "Classics & Canon",
       "Horror & Supernatural"
@@ -568,6 +583,9 @@
     "title": "Dune",
     "author": "Frank Herbert",
     "description": "A very readable and gripping science fiction trilogy with memorable characters. It’s like Lord of the Rings meets Games of Thrones set on a remote desert planet system.",
+    "minxin_library": true,
+    "minxin_location_zh": "中学-5F廊-B區-1層-8格",
+    "minxin_location_en": "Secondary – 5F Corridor – Zone B – Level 1 – Slot 8",
     "genres": [
       "Sci-Fi & Dystopia"
     ],
@@ -680,6 +698,9 @@
     "title": "Frankenstein",
     "author": "Mary Shelley",
     "description": "Mary Shelley’s gothic horror about a deranged scientist who wants to imagine his own living creation from dead bodies still has bite, shock value and complex themes. A well-written counterpoint to the myriad of recent zombie TV shows and computer games.",
+    "minxin_library": true,
+    "minxin_location_zh": "中学",
+    "minxin_location_en": "Secondary Library (Shelf unspecified)",
     "genres": [
       "Classics & Canon",
       "Horror & Supernatural"
@@ -812,6 +833,9 @@
     "title": "Great Expectations",
     "author": "Charles Dickens",
     "description": "The life of Pip is explored in this timeless saga filled with unique and memorable characters about one boy’s self-discovery and drive to become a man, despite unremitting adversity.",
+    "minxin_library": true,
+    "minxin_location_zh": "小学-4F廊-D區-2層-5格",
+    "minxin_location_en": "Primary – 4F Corridor – Zone D – Level 2 – Slot 5",
     "genres": [
       "Classics & Canon"
     ],
@@ -910,6 +934,9 @@
     "title": "Holes",
     "author": "Louis Sachar",
     "description": "Stanley Yelnats IV’s family has been cursed since his great-great-grandfather’s time, and Stanley has been wrongly accused of stealing the shoes of Clyde “Sweet Feet” Livingston, a star basketball player. An ideal class study option.",
+    "minxin_library": true,
+    "minxin_location_zh": "已续借",
+    "minxin_location_en": "Checked out",
     "genres": [
       "Mystery, Crime & Thrillers",
       "School, Family & Growing Up"
@@ -1012,6 +1039,9 @@
     "title": "Journey to the River Sea",
     "author": "Eva Ibbotson",
     "description": "An orphaned young girl and her governess travel thousands of miles from boarding school to South America with distant relatives. A stunning and wonderfully described adventure. An easier book to read.",
+    "minxin_library": true,
+    "minxin_location_zh": "中学-5F廊-B區-1層-11格",
+    "minxin_location_en": "Secondary – 5F Corridor – Zone B – Level 1 – Slot 11",
     "genres": [
       "Adventure & Survival"
     ],
@@ -1498,6 +1528,9 @@
     "title": "Peter Pan",
     "author": "J.M. Barrie",
     "description": "The timeless classic story of the boy who never grew up, Wendy and her brothers, and Neverland, where the Lost Boys are in constant danger from Captain Hook.",
+    "minxin_library": true,
+    "minxin_location_zh": "中学-5F廊-B區-2層-2格",
+    "minxin_location_en": "Secondary – 5F Corridor – Zone B – Level 2 – Slot 2",
     "genres": [
       "Adventure & Survival",
       "Classics & Canon"
@@ -1582,6 +1615,9 @@
     "title": "Private Peaceful",
     "author": "Michael Morpurgo",
     "description": "The emotive story of Thomas “Tommo” Peaceful, who is looking back on his life in the trenches of World War I in Belgium. Each chapter brings the reader closer to the present.",
+    "minxin_library": true,
+    "minxin_location_zh": "小学-4F館-A區-3層-4格",
+    "minxin_location_en": "Primary – 4F Library – Zone A – Level 3 – Slot 4",
     "genres": [
       "Historical & War"
     ],
@@ -1614,6 +1650,9 @@
     "title": "Rebecca",
     "author": "Daphne Du Maurier",
     "description": "A downtrodden orphan thinks her life has changed for the better after meeting Maxim de Winter in the South of France in a whirlwind romance. But moving to Cornwall reveals an unexpected ghost from the past and a nemesis in the mysterious housekeeper, Mrs Danvers. What happened to the previous Mrs de Winter?",
+    "minxin_library": true,
+    "minxin_location_zh": "中学-5F廊-B區-1層-5格",
+    "minxin_location_en": "Secondary – 5F Corridor – Zone B – Level 1 – Slot 5",
     "genres": [
       "Classics & Canon"
     ],
@@ -1664,6 +1703,9 @@
     "title": "Robinson Crusoe",
     "author": "Daniel Defoe",
     "description": "The original and ultimate castaway shipwreck survival story set on a remote tropical island with cannibals.",
+    "minxin_library": true,
+    "minxin_location_zh": "中学-5F廊-B區-1層-4格",
+    "minxin_location_en": "Secondary – 5F Corridor – Zone B – Level 1 – Slot 4",
     "genres": [
       "Adventure & Survival",
       "Classics & Canon"
@@ -1872,6 +1914,9 @@
     "title": "Speak",
     "author": "Laurie Halse Anderson",
     "description": "When Melinda tries to do the right thing, she finds herself shunned by friends and on the street. Nothing she does seems to make things better, and her parents are no help at all. Cleverly written so the reader only finds out exactly what Melinda did at the end.",
+    "minxin_library": true,
+    "minxin_location_zh": "中学-5F廊-B區-1層-4格",
+    "minxin_location_en": "TBD",
     "genres": [
       "Mystery, Crime & Thrillers"
     ],
@@ -2074,6 +2119,9 @@
     "title": "The Count of Monte Cristo",
     "author": "Alexandre Dumas",
     "description": "An epic page-turner of a novel, written in episodes. This is the classic fiction equivalent of an addictive box set – a nineteenth-century ‘Breaking Bad’. Fuelled by revenge, Edmond Dantès seeks to get back everything he lost and stakes a claim to a lot more.",
+    "minxin_library": true,
+    "minxin_location_zh": "中学-5F廊-B區-1層-5格",
+    "minxin_location_en": "Secondary – 5F Corridor – Zone B – Level 1 – Slot 5",
     "genres": [
       "Adventure & Survival",
       "Classics & Canon"
@@ -2092,6 +2140,9 @@
     "title": "The Curious Incident of the Dog in the Night-time",
     "author": "Mark Haddon",
     "description": "Christopher isn’t like other teenagers. He finds it difficult to talk to other people, hates being touched and reacts badly to certain colours. When the neighbour’s dog is murdered, he causes chaos trying to find out who did it.",
+    "minxin_library": true,
+    "minxin_location_zh": "中学-5F廊-B區-3層-8格",
+    "minxin_location_en": "Secondary – 5F Corridor – Zone B – Level 3 – Slot 8",
     "genres": [
       "Mystery, Crime & Thrillers"
     ],
@@ -2956,6 +3007,9 @@
     "title": "To Kill a Mockingbird",
     "author": "Harper Lee",
     "description": "In this classic 1930s story, a black man is charged with raping a white girl and has to fight class, racial hatred and depression-era prejudice, as well as the courtroom. Atticus Finch, a white father, has the task of defending him.",
+    "minxin_library": true,
+    "minxin_location_zh": "中学-5F廊-A區-4層-1格",
+    "minxin_location_en": "Secondary – 5F Corridor – Zone A – Level 4 – Slot 1",
     "genres": [
       "Classics & Canon"
     ],
@@ -3090,6 +3144,9 @@
     "title": "Watership Down",
     "author": "Richard Adams",
     "description": "Possibly the best and most well-known animal adventure. Fiver has a sixth sense for danger and he persuades Hazel to lead a group of rabbits to escape an impending disaster and search for a new home.",
+    "minxin_library": true,
+    "minxin_location_zh": "中学-5F廊-B區-3層-2格",
+    "minxin_location_en": "Secondary – 5F Corridor – Zone B – Level 3 – Slot 2",
     "genres": [
       "Adventure & Survival",
       "Classics & Canon"
@@ -3262,6 +3319,9 @@
     "title": "Wonder",
     "author": "R.J. Palacio",
     "description": "Augie wants to be like every other ten-year-old. But whenever anyone looks at him, they treat him differently because of a terrible facial abnormality. Can he convince everyone that he’s just like them inside? Perfect to provoke discussion in book clubs.",
+    "minxin_library": true,
+    "minxin_location_zh": "中学-5F廊-B區-2層-15格",
+    "minxin_location_en": "Secondary – 5F Corridor – Zone B – Level 2 – Slot 15",
     "genres": [
       "Social Issues & Justice"
     ],
