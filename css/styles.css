@@ -295,40 +295,15 @@ body.dark .platform-selector {
   position: relative; 
   /* Cursor pointer indicates interactivity (tap/click) */
   cursor: pointer;
+
 }
 
 /* MODERN HOVER OVERLAY */
+/* Disable hover overlays entirely */
 .book-overlay {
-  position: absolute;
-
-  /* Reveal just the lower portion of the card */
-  top: 45%;
-  bottom: 0;
-  left: 0;
-  right: 0;
-
-  background: rgba(0, 0, 0, 0.75);
-  background: var(--accent-primary); /* Use theme color for consistency */
-  color: white;
-
-  /* Using block ensures text starts at the top and scrolls correctly */
-  display: block; 
-  text-align: center;
-  padding: 20px 15px 15px 15px; 
-
-  opacity: 0;
-  transform: translateY(10px); 
-  transition: 
-    opacity 0.25s ease,
-    transform 0.25s ease;
-
-  overflow-y: auto;
-  backdrop-filter: blur(3px);
-  pointer-events: none;
-
-  z-index: 10;
-  border-top: 1px solid rgba(255,255,255,0.2);
+  display: none !important;
 }
+
 
 /* Hover trigger AND Active trigger (for Touch) */
 .book-card:hover .book-overlay,
@@ -342,6 +317,8 @@ body.dark .platform-selector {
   width: 100%;
   height: 230px;
   object-fit: cover;
+
+  
 }
 
 .book-body {
@@ -479,6 +456,37 @@ body.dark .platform-selector {
   animation: heart-pop 0.25s ease;
 }
 
+/* Minxin Library badge */
+.minxin-badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  padding: 3px 7px;
+  font-size: 0.65rem;
+  z-index: 5;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 4px 8px;
+  border-radius: 999px;
+
+  font-size: 0.7rem;
+  font-weight: 600;
+
+  background: var(--accent-pill-bg);
+  color: var(--accent-pill-text);
+
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  border: 1px solid #c62828; /* Minxin red */
+}
+
+.minxin-badge span {
+  line-height: 1;
+}
+
+
 /* Hover polish */
 .book-card:hover .heart-btn,
 .book-card-list:hover .heart-btn {
@@ -519,6 +527,18 @@ body.dark .platform-selector {
   flex-direction: column;
   gap: 16px;
 }
+
+.book-modal-library {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0,0,0,0.1);
+
+  font-size: 0.9rem;
+  font-weight: 500;
+
+  color: var(--accent-primary);
+}
+
 
 /* FIXED: Changed to ABSOLUTE positioning to prevent mobile overlap issues */
 .book-modal-close {
