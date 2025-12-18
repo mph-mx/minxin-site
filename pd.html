@@ -293,38 +293,47 @@
     }
 
 
-    /* ---------------------------------------------
-       PILLS (Shared)
-    --------------------------------------------- */
-    function createPills(book) {
-      const pills = document.createElement('div');
-      pills.className = 'pills';
+	/* ---------------------------------------------
+	   PILLS (Shared) - Updated for Color Coding
+	--------------------------------------------- */
+	function createPills(book) {
+	  const pills = document.createElement('div');
+	  // Ensure the container has the class that lays them out (usually 'card-pills' or just 'pills')
+	  pills.className = 'card-pills'; 
 
-      // Age band pill first (Grades K-2, etc.)
-      if (book.age_band) {
-        const ageSpan = document.createElement('span');
-        ageSpan.className = 'pill-age';
-        ageSpan.textContent = book.age_band;
-        pills.appendChild(ageSpan);
-      }
+	  // 1. Age Band Pill (Color-coded)
+	  if (book.age_band) {
+		const ageSpan = document.createElement('span');
+		
+		// Generate the specific CSS class name (slug)
+		// Turns "Grades K–2" into "age-grades-k-2"
+		const slug = 'age-' + book.age_band.toLowerCase()
+		  .replace(/\s+/g, '-')       // Replace spaces with -
+		  .replace(/[–—]/g, '-');     // Replace en-dash/em-dash with -
 
-      // Genre pills (Picture Book, Fiction, Graphic Novel, Non-Fiction)
-      const pillSource = (book.genre_pills && book.genre_pills.length)
-        ? book.genre_pills
-        : (book.genres || []);
+		// Apply classes: 
+		// 'pill' (base shape), 'age-band' (border/weight), and 'slug' (specific color)
+		ageSpan.className = `pill age-band ${slug}`;
+		ageSpan.textContent = book.age_band;
+		pills.appendChild(ageSpan);
+	  }
 
-      const pillSet = new Set(pillSource);
+	  // 2. Genre Pills
+	  const pillSource = (book.genre_pills && book.genre_pills.length)
+		? book.genre_pills
+		: (book.genres || []);
 
-      pillSet.forEach(p => {
-        const span = document.createElement('span');
-        span.className = 'pill-genre';
-        span.textContent = p;
-        pills.appendChild(span);
-      });
+	  const pillSet = new Set(pillSource);
 
-      return pills;
-    }
+	  pillSet.forEach(p => {
+		const span = document.createElement('span');
+		span.className = 'pill'; // Standard pill class
+		span.textContent = p;
+		pills.appendChild(span);
+	  });
 
+	  return pills;
+	}
 
     /* ---------------------------------------------
        GRID / LIST LOGIC
