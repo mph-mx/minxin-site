@@ -185,27 +185,48 @@
         searchBtn.classList.add('hidden');
     }
 
-    modal.querySelector('.book-modal-title').textContent = book.title || '';
-    modal.querySelector('.book-modal-author').textContent = book.author || '';
+	  modal.querySelector('.book-modal-title').textContent = book.title || '';
+	  modal.querySelector('.book-modal-author').textContent = book.author || '';
 
-    const metaParts = [];
-    if (book.reading_level) metaParts.push(book.reading_level);
-    if (book.age_band) metaParts.push(book.age_band);
-    modal.querySelector('.book-modal-meta').textContent = metaParts.join(' · ');
+	  /* 1. UPDATE METADATA TEXT: Remove age_band so it isn't duplicated */
+	  const metaParts = [];
+	  if (book.reading_level) metaParts.push(book.reading_level);
+	  // REMOVED: if (book.age_band) metaParts.push(book.age_band);
+	  modal.querySelector('.book-modal-meta').textContent = metaParts.join(' · ');
 
-    const pillsContainer = modal.querySelector('.book-modal-pills');
-    pillsContainer.innerHTML = '';
 
-    const pillSource = (book.genre_pills && book.genre_pills.length)
-      ? book.genre_pills
-      : (book.genres || []);
+	  /* 2. UPDATE PILLS: Add the Age Pill logic here */
+	  const pillsContainer = modal.querySelector('.book-modal-pills');
+	  pillsContainer.innerHTML = ''; // Clear previous pills
 
-    Array.from(new Set(pillSource)).forEach(p => {
-      const span = document.createElement('span');
-      span.className = 'pill-genre';
-      span.textContent = p;
-      pillsContainer.appendChild(span);
-    });
+	  // --- NEW: Age Band Pill ---
+	  if (book.age_band) {
+		const ageSpan = document.createElement('span');
+		
+		// Create the CSS slug (e.g. "age-grades-3-5")
+		const slug = 'age-' + book.age_band.toLowerCase()
+		  .replace(/\s+/g, '-')
+		  .replace(/[–—]/g, '-');
+
+		// Apply classes: 'pill' + 'age-band' + specific color slug
+		ageSpan.className = `pill age-band ${slug}`;
+		ageSpan.textContent = book.age_band;
+		
+		pillsContainer.appendChild(ageSpan);
+	  }
+	  // --------------------------
+
+	  const pillSource = (book.genre_pills && book.genre_pills.length)
+		? book.genre_pills
+		: (book.genres || []);
+
+	  Array.from(new Set(pillSource)).forEach(p => {
+		const span = document.createElement('span');
+		span.className = 'pill-genre';
+		span.textContent = p;
+		pillsContainer.appendChild(span);
+	  });
+
 
     modal.querySelector('.book-modal-description').textContent =
       book.description || 'No description available yet.';
@@ -446,5 +467,18 @@
         URL.revokeObjectURL(url);
     }
   };
+  
+	  // Helper to generate Age Band HTML
+	function createAgePill(ageBand) {
+	  if (!ageBand) return '';
+	  
+	  // Convert "Grades K–2" to "age-grades-k-2" for CSS
+	  // Handles spaces and different types of dashes
+	  const slug = 'age-' + ageBand.toLowerCase()
+		.replace(/\s+/g, '-')       // Replace spaces with -
+		.replace(/[–—]/g, '-');     // Replace en-dash/em-dash with -
+
+	  return `<span class="pill age-band ${slug}">${ageBand}</span>`;
+	}
 })();
 // [file content end]
