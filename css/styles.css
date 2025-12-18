@@ -797,44 +797,97 @@ body.dark #exportFavoritesBtn:hover {
 }
 
 /* -----------------------------------------------------
-   PILLS
+   PILLS & TAGS
 ----------------------------------------------------- */
 
-/* Genre pills */
+/* Container: Fixes layout so pills wrap nicely and don't overlap */
+.card-pills, 
+.book-modal-pills,
+.pills { /* legacy support */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px; /* Space between pills */
+  margin-top: 8px;
+  align-items: center;
+}
+
+/* --- Shared Base Style for All Pills --- */
+.pill, 
+.pill-genre, 
+.pill-level,
+.pill-age { 
+  display: inline-block;
+  padding: 4px 10px;      /* Slightly larger for "pop" */
+  font-size: 0.7rem;      /* Readable text */
+  border-radius: 12px;    /* Soft roundness */
+  white-space: nowrap;    /* CRITICAL: Prevents text from breaking onto two lines */
+  line-height: 1.1;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid transparent; /* Keeps sizing consistent */
+}
+
+/* --- 1. Genre Pills (Default) --- */
+.pill,
 .pill-genre {
-  background: var(--accent-pill-bg);
+  background: var(--accent-pill-bg); /* Uses your theme vars */
   color: var(--accent-pill-text);
-  border-radius: 999px;
-  padding: 3px 8px;
-  font-size: 0.68rem;
-  margin: 2px;
-  display: inline-block;
+  border-color: rgba(0,0,0,0.03);    /* Subtle definition */
 }
 
-/* Reading level pills (Explorer/Adventurer…) */
+/* --- 2. Reading Level Pills (Explorer/Adventurer...) --- */
 .pill-level {
-  background: #fff4d9;
-  border: 1px solid #e4c995;
-  color: #946600;
-  border-radius: 6px;
-  padding: 3px 8px;
-  font-size: 0.68rem;
-  font-weight: 600;
-  margin: 2px;
-  display: inline-block;
-}
-/* Age / grade band pills (PD) */
-.pill-age {
-  background: #ffe5c2;
-  border-radius: 999px;
-  padding: 3px 8px;
-  font-size: 0.68rem;
-  margin: 2px;
-  display: inline-block;
-  color: #9a4a00;
-  font-weight: 600;
+  background: #fff8e1; /* Warm sunny background */
+  border: 1px solid #ffe082;
+  color: #b07200;
 }
 
+/* --- 3. Age Band Pills (New Fun Colors!) --- */
+/* Base Age Pill Style */
+.pill.age-band {
+  border: 1px solid rgba(0,0,0,0.1); 
+  font-weight: 700; /* Bolder text for visibility */
+}
+
+/* Grades K–2: Fun Vibrant Green (Minty/Fresh) */
+.pill.age-grades-k-2,
+.pill.age-grades-k-1 {
+  background-color: #fff3e0; /* Pale Orange background */
+  color: #e65100;            /* Deep Orange text */
+  border-color: #ffcc80;
+}
+
+/* Grades 3–5: Fun Bright Blue (Electric/Sky) */
+.pill.age-grades-3-5,
+.pill.age-grades-3-4,
+.pill.age-grades-4-5 {
+  background-color: #e6fffa; /* Minty background */
+  color: #0d9488;            /* Strong Teal text */
+  border-color: #99f6e4;
+}
+
+/* Grades 1–3: FUN PURPLE (Distinct from Orange, Teal, and Blue) */
+.pill.age-grades-1-3,
+.pill.age-grades-2-3 {
+  background-color: #f3e8ff; /* Light Lavender background */
+  color: #7e22ce;            /* Deep Purple text */
+  border-color: #d8b4fe;
+}
+
+/* Fallback / Default Age */
+.pill.age-default {
+  background-color: #f3f4f6;
+  color: #374151;
+  border-color: #d1d5db;
+}
+
+/* -----------------------------------------------------
+   LEVEL CARD BORDERS (Kept as is)
+----------------------------------------------------- */
+.level-card[data-level="Explorer"] { border-top: 4px solid #4CAF50; }
+.level-card[data-level="Adventurer"] { border-top: 4px solid #FFC107; }
+.level-card[data-level="Voyager"] { border-top: 4px solid #FF9800; }
+.level-card[data-level="Galactic"] { border-top: 4px solid #F44336; }
 
 /* -----------------------------------------------------
    GRID / LIST
@@ -956,12 +1009,6 @@ body.dark #exportFavoritesBtn:hover {
 }
 
 
-
-/* Color coding the top borders of level cards */
-.level-card[data-level="Explorer"] { border-top: 4px solid #4CAF50; }
-.level-card[data-level="Adventurer"] { border-top: 4px solid #FFC107; }
-.level-card[data-level="Voyager"] { border-top: 4px solid #FF9800; }
-.level-card[data-level="Galactic"] { border-top: 4px solid #F44336; }
 
 /* -----------------------------------------------------
    UTILITIES
