@@ -105,6 +105,13 @@
       "Sport": "Sport"
     };
 
+	const DISPLAY_GENRE_NAMES = {
+	  "Early Literacy & Picture Books": "Picture Books",
+	  "Graphic Novels": "Graphic Novels",
+	  "Non-Fiction": "Non-Fiction"
+	};
+
+
     const STATE = {
       books: [],
       genres: [],
@@ -169,7 +176,7 @@
         header.className = 'genre-row-header';
 
         const h2 = document.createElement('h2');
-        h2.textContent = genre;
+        h2.textContent = DISPLAY_GENRE_NAMES[genre] || genre;
 
         const count = document.createElement('small');
         count.textContent = `${rowBooks.length} book${rowBooks.length === 1 ? '' : 's'}`;
@@ -196,10 +203,6 @@
     function createGridCard(book) {
       const card = document.createElement('article');
       card.className = 'book-card';
-
-      const overlay = document.createElement('div');
-      overlay.className = 'book-overlay';
-      overlay.textContent = book.description || 'No description available.';
 
       const img = document.createElement('img');
       img.src = book.image;
@@ -228,7 +231,6 @@
       body.appendChild(meta);
       body.appendChild(pills);
 
-      card.appendChild(overlay);
       card.appendChild(img);
       card.appendChild(body);
 
